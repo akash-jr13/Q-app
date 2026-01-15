@@ -2,7 +2,7 @@
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Q-Studio - Test Preparation Platform
+# Q-app - Test Preparation Platform
 
 > A comprehensive test preparation platform for competitive exam aspirants with PDF question mapping, test taking, and AI-powered analytics.
 
@@ -113,7 +113,7 @@
 ## 📁 Project Structure
 
 ```
-q-studio/
+q-app/
 ├── components/          # React components
 │   ├── mapper/         # PDF question mapping
 │   ├── taker/          # Test taking interface

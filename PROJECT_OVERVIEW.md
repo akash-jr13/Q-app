@@ -1,8 +1,8 @@
-# Q-Studio - Project Overview
+# Q-app - Project Overview
 
-## 🎯 What is Q-Studio?
+## 🎯 What is Q-app?
 
-Q-Studio is a comprehensive test preparation platform designed for students preparing for competitive exams. It provides a complete ecosystem for creating, taking, and analyzing practice tests.
+Q-app is a comprehensive test preparation platform designed for students preparing for competitive exams. It provides a complete ecosystem for creating, taking, and analyzing practice tests.
 
 ## 🏗️ Architecture
 
@@ -27,7 +27,7 @@ Q-Studio is a comprehensive test preparation platform designed for students prep
 ## 📁 Project Structure
 
 ```
-q-studio/
+q-app/
 ├── components/           # React components
 │   ├── mapper/          # PDF question mapping
 │   ├── taker/           # Test taking interface

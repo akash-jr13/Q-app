@@ -1,4 +1,4 @@
-# Quick Start - Q-Studio
+# Quick Start - Q-app
 
 ## ⚡ Get Started in 5 Minutes
 

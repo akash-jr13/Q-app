@@ -1,4 +1,4 @@
-# Q-Studio - Complete Setup Guide
+# Q-app - Complete Setup Guide
 
 ## 📋 Table of Contents
 1. [Project Overview](#project-overview)
@@ -88,7 +88,7 @@
 1. Go to [Supabase](https://supabase.com)
 2. Click **"Start your project"** and sign up
 3. Create a new project:
-   - Choose a project name (e.g., "q-studio")
+   - Choose a project name (e.g., "q-app")
    - Set a strong database password (save this!)
    - Select a region close to you
    - Click **"Create new project"**
@@ -120,7 +120,7 @@
 2. Sign up and create a new tenant
 3. Create a new application:
    - Click **Applications** → **Create Application**
-   - Name: "Q-Studio"
+   - Name: "Q-app"
    - Type: **Single Page Web Applications**
    - Click **Create**
 4. Configure application:
@@ -230,7 +230,7 @@ CREATE POLICY "Allow public read" ON test_attempts
    git add .
    git commit -m "Initial commit"
    git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/q-studio.git
+   git remote add origin https://github.com/akash-jr13/Q-app.git
    git push -u origin main
    ```
 
@@ -278,7 +278,7 @@ CREATE POLICY "Allow public read" ON test_attempts
 
 ### Step 5: Update Auth0 URLs (if using Auth0)
 
-1. Copy your Vercel deployment URL (e.g., `https://q-studio.vercel.app`)
+1. Copy your Vercel deployment URL (e.g., `https://q-app.vercel.app`)
 2. Go to Auth0 dashboard → Your Application → Settings
 3. Update these fields:
    - **Allowed Callback URLs**: Add `https://your-domain.vercel.app`

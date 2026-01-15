@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { 
-  LayoutGrid, 
-  Settings, 
-  User as UserIcon, 
-  History, 
+import {
+  LayoutGrid,
+  Settings,
+  User as UserIcon,
+  History,
   Box,
   Layers,
   Menu,
@@ -75,7 +75,7 @@ const App: React.FC = () => {
             <div className="flex flex-col items-center justify-center gap-6 opacity-20 pointer-events-none select-none">
               <Command size={64} className="text-zinc-500" />
               <span className="text-xs font-mono font-bold uppercase tracking-[0.5em] text-zinc-500">
-                Q-Studio Initiated
+                Q-app Initiated
               </span>
             </div>
           </main>
@@ -93,12 +93,12 @@ const App: React.FC = () => {
       case 'neural-audit':
         return <NeuralAuditInterface onExit={() => setMode('progress')} />;
       case 'analysis':
-        return <TestAnalysis 
-          testName={analysisData?.testName || "No Analysis"} 
-          questions={analysisData?.questions || []} 
-          answers={analysisData?.answers || {}} 
-          questionTimes={analysisData?.questionTimes || {}} 
-          onExit={() => setMode('dashboard')} 
+        return <TestAnalysis
+          testName={analysisData?.testName || "No Analysis"}
+          questions={analysisData?.questions || []}
+          answers={analysisData?.answers || {}}
+          questionTimes={analysisData?.questionTimes || {}}
+          onExit={() => setMode('dashboard')}
         />;
       case 'auth':
         return <AuthInterface onAuthSuccess={(p) => { setUserProfile(p); setMode('dashboard'); }} onExit={() => setMode('dashboard')} />;
@@ -120,10 +120,10 @@ const App: React.FC = () => {
               <div className="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center text-black shadow-lg">
                 <Box size={18} strokeWidth={2.5} />
               </div>
-              <span className="font-bold tracking-tight text-lg">Q-Studio</span>
+              <span className="font-bold tracking-tight text-lg">Q-app</span>
             </div>
           )}
-          <button 
+          <button
             onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
             className="p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 transition-colors"
           >
@@ -134,33 +134,33 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-y-auto py-6 px-2 space-y-8">
           {/* Navigation Group - available options as requested */}
           <div className="space-y-1">
-            <NavItem 
-              icon={<Play size={18} />} 
-              label="Q-Taker" 
+            <NavItem
+              icon={<Play size={18} />}
+              label="Q-Taker"
               onClick={() => { setPreloadedPackage(null); setMode('taker'); }}
-              active={mode === 'taker'} 
-              expanded={isSidebarExpanded} 
+              active={mode === 'taker'}
+              expanded={isSidebarExpanded}
             />
-            <NavItem 
-              icon={<Layers size={18} />} 
-              label="Q-Series" 
+            <NavItem
+              icon={<Layers size={18} />}
+              label="Q-Series"
               onClick={() => setMode('test-series')}
-              active={mode === 'test-series'} 
-              expanded={isSidebarExpanded} 
+              active={mode === 'test-series'}
+              expanded={isSidebarExpanded}
             />
-            <NavItem 
-              icon={<TrendingUp size={18} />} 
-              label="Q-Progress" 
+            <NavItem
+              icon={<TrendingUp size={18} />}
+              label="Q-Progress"
               onClick={() => setMode('progress')}
-              active={mode === 'progress'} 
-              expanded={isSidebarExpanded} 
+              active={mode === 'progress'}
+              expanded={isSidebarExpanded}
             />
-            <NavItem 
-              icon={<History size={18} />} 
-              label="Q-History" 
+            <NavItem
+              icon={<History size={18} />}
+              label="Q-History"
               onClick={() => setMode('history')}
-              active={mode === 'history'} 
-              expanded={isSidebarExpanded} 
+              active={mode === 'history'}
+              expanded={isSidebarExpanded}
             />
           </div>
 
@@ -168,9 +168,9 @@ const App: React.FC = () => {
           {isSidebarExpanded && (
             <div className="space-y-4 px-3 pt-4 border-t border-zinc-900/50">
               <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Workspace</h3>
-              <NavItem 
-                icon={<Plus size={18} />} 
-                label="New Project" 
+              <NavItem
+                icon={<Plus size={18} />}
+                label="New Project"
                 onClick={() => {
                   const newWs: WorkspaceState = {
                     id: Math.random().toString(36).substr(2, 9),
@@ -180,8 +180,8 @@ const App: React.FC = () => {
                   };
                   setActiveWorkspace(newWs);
                   setMode('workspace');
-                }} 
-                expanded={isSidebarExpanded} 
+                }}
+                expanded={isSidebarExpanded}
               />
             </div>
           )}
@@ -189,14 +189,14 @@ const App: React.FC = () => {
 
         <div className="p-2 border-t border-zinc-900 space-y-1">
           <NavItem icon={<Sparkles size={18} />} label="Upgrade Plan" expanded={isSidebarExpanded} />
-          <NavItem 
-            icon={<Settings size={18} />} 
-            label="Settings" 
+          <NavItem
+            icon={<Settings size={18} />}
+            label="Settings"
             onClick={() => setMode('settings')}
             active={mode === 'settings'}
-            expanded={isSidebarExpanded} 
+            expanded={isSidebarExpanded}
           />
-          <div 
+          <div
             onClick={() => setMode('auth')}
             className="p-2 flex items-center gap-3 hover:bg-zinc-900 rounded-xl transition-all cursor-pointer group"
           >
@@ -227,7 +227,7 @@ const App: React.FC = () => {
 };
 
 const NavItem = ({ icon, label, onClick, active = false, expanded = true }: { icon: any, label: string, onClick?: () => void, active?: boolean, expanded: boolean }) => (
-  <button 
+  <button
     onClick={onClick}
     className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all ${active ? 'bg-zinc-900 text-zinc-100 shadow-inner ring-1 ring-white/5' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/50'}`}
   >
