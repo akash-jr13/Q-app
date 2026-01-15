@@ -464,48 +464,47 @@ export const TakerInterface: React.FC<TakerInterfaceProps> = ({ onExit, initialP
   }
 
   return (
-    <div className="flex flex-col h-screen w-full bg-zinc-950 text-zinc-300 relative font-sans overflow-hidden">
-      <header className="h-14 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between px-4 shrink-0 z-20">
-        <div className="font-bold text-zinc-100 flex items-center gap-3 min-w-0">
-          <button onClick={onExit} className="p-1.5 hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-zinc-200 transition-colors shrink-0"><ArrowLeft size={16} /></button>
-          <div className="flex flex-col min-w-0">
-            <span className="leading-tight text-sm tracking-widest uppercase font-mono truncate">Q-Taker</span>
-            <span className="text-[10px] text-zinc-500 font-mono font-medium">Session Initializer</span>
+    <>
+      <div className="flex flex-col h-screen w-full bg-zinc-950 text-zinc-300 relative font-sans overflow-hidden">
+        <header className="h-14 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between px-4 shrink-0 z-20">
+          <div className="font-bold text-zinc-100 flex items-center gap-3 min-w-0">
+            <button onClick={onExit} className="p-1.5 hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-zinc-200 transition-colors shrink-0"><ArrowLeft size={16} /></button>
+            <div className="flex flex-col min-w-0">
+              <span className="leading-tight text-sm tracking-widest uppercase font-mono truncate">Q-Taker</span>
+              <span className="text-[10px] text-zinc-500 font-mono font-medium">Session Initializer</span>
+            </div>
+          </div>
+        </header>
+        <div className="flex-1 flex flex-col items-center justify-center relative">
+          <div className="absolute inset-0 bg-[radial-gradient(#3f3f46_1px,transparent_1px)] [background-size:24px_24px] opacity-25 pointer-events-none" />
+          <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".zip" className="hidden" />
+          <div className="w-full max-w-md p-8 rounded-2xl border border-zinc-800 bg-zinc-900/50 backdrop-blur-sm text-center relative z-10">
+            <div className="w-16 h-16 mx-auto bg-zinc-800 rounded-2xl flex items-center justify-center mb-6 shadow-xl border border-zinc-700/50">
+              <Upload size={24} className="text-zinc-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-zinc-100 mb-2 uppercase tracking-widest">Load Test Package</h2>
+            <p className="text-zinc-500 text-sm mb-8 font-mono uppercase tracking-tighter">Upload the encrypted ZIP provided by your instructor.</p>
+            <button onClick={() => fileInputRef.current?.click()} className="w-full py-3 bg-zinc-100 hover:bg-white text-black font-bold rounded-lg transition-all shadow-lg active:translate-y-0.5 uppercase tracking-widest">Select Package</button>
           </div>
         </div>
-      </header>
-      <div className="flex-1 flex flex-col items-center justify-center relative">
-        <div className="absolute inset-0 bg-[radial-gradient(#3f3f46_1px,transparent_1px)] [background-size:24px_24px] opacity-25 pointer-events-none" />
-        <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".zip" className="hidden" />
-        <div className="w-full max-w-md p-8 rounded-2xl border border-zinc-800 bg-zinc-900/50 backdrop-blur-sm text-center relative z-10">
-          <div className="w-16 h-16 mx-auto bg-zinc-800 rounded-2xl flex items-center justify-center mb-6 shadow-xl border border-zinc-700/50">
-            <Upload size={24} className="text-zinc-400" />
+      </div>
+      {isPasswordModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-[360px] bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl p-6 relative animate-in zoom-in-95 duration-200">
+            <button onClick={() => { setPasswordModalOpen(false); setSelectedZip(null); }} className="absolute right-4 top-4 text-zinc-500 hover:text-zinc-200 transition-colors"><X size={16} /></button>
+            <div className="flex flex-col items-center gap-4 mb-6"><div className="w-12 h-12 bg-zinc-900 rounded-full flex items-center justify-center border border-zinc-800 text-zinc-100 shadow-lg"><Lock size={20} /></div><div className="text-center"><h3 className="text-lg font-bold text-zinc-100 uppercase tracking-widest">Decrypt Package</h3><p className="text-[10px] text-zinc-500 mt-1 uppercase">Enter test password.</p></div></div>
+            <form onSubmit={handleDecrypt} className="space-y-4">
+              <input type="password" autoFocus value={password} onChange={(e) => { setPassword(e.target.value); setDecryptError(""); }} placeholder="TEST PASSWORD"
+                className={`w-full bg-zinc-900 border ${decryptError ? 'border-red-500/50 focus:border-red-500' : 'border-zinc-800 focus:border-zinc-500/50'} text-zinc-200 text-sm rounded-xl py-3 px-4 outline-none transition-all placeholder:text-zinc-700 font-mono`} />
+              {decryptError && <p className="text-[10px] text-red-400 text-center font-bold animate-in slide-in-from-top-1 uppercase">{decryptError}</p>}
+              <button type="submit" disabled={!password || isDecrypting}
+                className="w-full bg-zinc-100 hover:bg-white text-black font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest">
+                {isDecrypting ? <><Loader2 size={14} className="animate-spin" />DECRYPTING...</> : <><ChevronRight size={14} />START TEST</>}
+              </button>
+            </form>
           </div>
-          <h2 className="text-2xl font-bold text-zinc-100 mb-2 uppercase tracking-widest">Load Test Package</h2>
-          <p className="text-zinc-500 text-sm mb-8 font-mono uppercase tracking-tighter">Upload the encrypted ZIP provided by your instructor.</p>
-          <button onClick={() => fileInputRef.current?.click()} className="w-full py-3 bg-zinc-100 hover:bg-white text-black font-bold rounded-lg transition-all shadow-lg active:translate-y-0.5 uppercase tracking-widest">Select Package</button>
         </div>
-      </div>
-    </div>
-      {
-    isPasswordModalOpen && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-        <div className="w-[360px] bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl p-6 relative animate-in zoom-in-95 duration-200">
-          <button onClick={() => { setPasswordModalOpen(false); setSelectedZip(null); }} className="absolute right-4 top-4 text-zinc-500 hover:text-zinc-200 transition-colors"><X size={16} /></button>
-          <div className="flex flex-col items-center gap-4 mb-6"><div className="w-12 h-12 bg-zinc-900 rounded-full flex items-center justify-center border border-zinc-800 text-zinc-100 shadow-lg"><Lock size={20} /></div><div className="text-center"><h3 className="text-lg font-bold text-zinc-100 uppercase tracking-widest">Decrypt Package</h3><p className="text-[10px] text-zinc-500 mt-1 uppercase">Enter test password.</p></div></div>
-          <form onSubmit={handleDecrypt} className="space-y-4">
-            <input type="password" autoFocus value={password} onChange={(e) => { setPassword(e.target.value); setDecryptError(""); }} placeholder="TEST PASSWORD"
-              className={`w-full bg-zinc-900 border ${decryptError ? 'border-red-500/50 focus:border-red-500' : 'border-zinc-800 focus:border-zinc-500/50'} text-zinc-200 text-sm rounded-xl py-3 px-4 outline-none transition-all placeholder:text-zinc-700 font-mono`} />
-            {decryptError && <p className="text-[10px] text-red-400 text-center font-bold animate-in slide-in-from-top-1 uppercase">{decryptError}</p>}
-            <button type="submit" disabled={!password || isDecrypting}
-              className="w-full bg-zinc-100 hover:bg-white text-black font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest">
-              {isDecrypting ? <><Loader2 size={14} className="animate-spin" />DECRYPTING...</> : <><ChevronRight size={14} />START TEST</>}
-            </button>
-          </form>
-        </div>
-      </div>
-    )
-  }
+      )}
     </>
   );
 };
