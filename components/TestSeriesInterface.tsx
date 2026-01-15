@@ -55,27 +55,36 @@ export const TestSeriesInterface: React.FC<TestSeriesInterfaceProps> = ({ onExit
         <div className="min-h-screen bg-zinc-950 font-sans text-zinc-300 selection:bg-zinc-800 selection:text-zinc-100 relative flex flex-col">
             <div className="fixed inset-0 bg-[radial-gradient(#52525b_1px,transparent_1px)] [background-size:24px_24px] opacity-20 pointer-events-none z-0" />
 
-            <div className="bg-zinc-900 border-b border-zinc-800 p-4 sticky top-0 z-20 shadow-lg flex justify-between items-center">
-                <div className="flex items-center gap-4">
+            <div className="bg-zinc-900/80 backdrop-blur-xl border-b border-zinc-800 p-4 sticky top-0 z-20 shadow-2xl flex justify-between items-center transition-all">
+                <div className="flex items-center gap-6">
                     <button
                         onClick={() => selectedSeries ? setSelectedSeries(null) : onExit()}
-                        className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-zinc-400 hover:text-zinc-100 transition-colors border border-zinc-700/50"
+                        className="p-3 bg-zinc-800/50 hover:bg-zinc-700/80 rounded-2xl text-zinc-400 hover:text-zinc-100 transition-all border border-zinc-700/30 active:scale-95 shadow-inner"
                     >
-                        {selectedSeries ? <ArrowLeft size={16} /> : <Home size={16} />}
+                        {selectedSeries ? <ArrowLeft size={18} /> : <Home size={18} />}
                     </button>
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center text-zinc-400 border border-zinc-700/50">
-                            <Layers size={16} />
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-xl flex items-center justify-center text-zinc-200 border border-zinc-700/50 shadow-lg">
+                            <Layers size={20} strokeWidth={2.5} />
                         </div>
                         <div>
-                            <h1 className="text-sm font-bold text-zinc-100 tracking-wide leading-tight uppercase font-mono">Q-Test Series</h1>
-                            {selectedSeries && <p className="text-[10px] text-zinc-500 font-mono uppercase truncate max-w-[150px]">{selectedSeries.title}</p>}
+                            <div className="flex items-center gap-2">
+                                <h1 className="text-lg font-black text-zinc-100 tracking-tighter uppercase font-mono">Q-Series</h1>
+                                {!selectedSeries && seriesList.length > 0 && (
+                                    <span className="text-[10px] font-bold bg-zinc-800 text-zinc-500 px-2 py-0.5 rounded-full border border-zinc-700/50">
+                                        {seriesList.length} ACTIVE
+                                    </span>
+                                )}
+                            </div>
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest truncate max-w-[200px]">
+                                {selectedSeries ? selectedSeries.title : 'Centralized Test Intelligence'}
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="flex-1 p-4 md:p-8 relative z-10 max-w-6xl mx-auto w-full flex flex-col">
+            <div className="flex-1 p-4 md:p-8 relative z-10 max-w-7xl mx-auto w-full flex flex-col">
                 {isLoading ? (
                     <div className="flex-1 flex flex-col items-center justify-center gap-4">
                         <Loader2 size={32} className="animate-spin text-zinc-500" />
@@ -93,20 +102,22 @@ export const TestSeriesInterface: React.FC<TestSeriesInterfaceProps> = ({ onExit
                                 <button
                                     key={series.id}
                                     onClick={() => setSelectedSeries(series)}
-                                    className="group flex flex-col bg-zinc-900/50 hover:bg-zinc-900 border border-zinc-800 hover:border-zinc-600 rounded-2xl p-6 text-left transition-all hover:shadow-2xl hover:shadow-zinc-900/50 hover:-translate-y-1 relative overflow-hidden"
+                                    className="group flex flex-col bg-zinc-900/30 hover:bg-zinc-900 border border-zinc-800 hover:border-zinc-500 rounded-[2rem] p-8 text-left transition-all hover:shadow-2xl hover:shadow-zinc-900/80 hover:-translate-y-1.5 relative overflow-hidden backdrop-blur-sm"
                                 >
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-zinc-800/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-zinc-700/10 transition-colors" />
-                                    <div className="mb-4 w-12 h-12 bg-zinc-950 rounded-xl border border-zinc-800 flex items-center justify-center text-zinc-100 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                                        <IconComp size={24} strokeWidth={1.5} />
+                                    <div className="absolute top-0 right-0 w-40 h-40 bg-zinc-800/10 rounded-full blur-3xl -mr-12 -mt-12 group-hover:bg-zinc-500/10 transition-colors" />
+                                    <div className="mb-6 w-14 h-14 bg-zinc-950 rounded-2xl border border-zinc-800 flex items-center justify-center text-zinc-100 shadow-xl group-hover:scale-110 transition-transform duration-500 group-hover:border-zinc-600">
+                                        <IconComp size={28} strokeWidth={1.5} />
                                     </div>
-                                    <h3 className="text-lg font-bold text-zinc-100 mb-2 group-hover:text-white">{series.title}</h3>
-                                    <p className="text-xs text-zinc-500 leading-relaxed mb-6 h-8 line-clamp-2">{series.description}</p>
-                                    <div className="mt-auto flex items-center justify-between w-full pt-4 border-t border-zinc-800/50">
-                                        <span className="text-[10px] font-mono font-bold text-zinc-400 bg-zinc-950 px-2 py-1 rounded border border-zinc-800">
-                                            {series.tests.length} TESTS
-                                        </span>
-                                        <div className="w-8 h-8 rounded-full bg-zinc-950 flex items-center justify-center text-zinc-500 group-hover:text-zinc-200 group-hover:bg-zinc-800 transition-colors">
-                                            <ChevronRight size={16} />
+                                    <h3 className="text-xl font-bold text-zinc-100 mb-2 group-hover:text-white tracking-tight">{series.title}</h3>
+                                    <p className="text-xs text-zinc-500 leading-relaxed mb-8 h-8 line-clamp-2 uppercase font-mono tracking-tight">{series.description}</p>
+                                    <div className="mt-auto flex items-center justify-between w-full pt-6 border-t border-zinc-800/50">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] font-mono font-bold text-zinc-500 bg-zinc-950 px-3 py-1.5 rounded-full border border-zinc-800 shadow-inner uppercase">
+                                                {series.tests.length} Modules
+                                            </span>
+                                        </div>
+                                        <div className="w-10 h-10 rounded-full bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-500 group-hover:text-zinc-100 group-hover:bg-zinc-800 group-hover:border-zinc-700 transition-all shadow-lg active:scale-95">
+                                            <ChevronRight size={20} />
                                         </div>
                                     </div>
                                 </button>
@@ -126,8 +137,8 @@ export const TestSeriesInterface: React.FC<TestSeriesInterfaceProps> = ({ onExit
                                     <div
                                         key={test.id}
                                         className={`group flex flex-col sm:flex-row sm:items-center justify-between border p-4 rounded-xl transition-all ${isAvailable
-                                                ? 'bg-zinc-900/40 hover:bg-zinc-900 border-zinc-800 hover:border-zinc-700 cursor-default'
-                                                : 'bg-zinc-900/20 border-zinc-900 opacity-60 grayscale'
+                                            ? 'bg-zinc-900/40 hover:bg-zinc-900 border-zinc-800 hover:border-zinc-700 cursor-default'
+                                            : 'bg-zinc-900/20 border-zinc-900 opacity-60 grayscale'
                                             }`}
                                     >
                                         <div className="flex items-start gap-4 mb-4 sm:mb-0">
@@ -159,8 +170,8 @@ export const TestSeriesInterface: React.FC<TestSeriesInterfaceProps> = ({ onExit
                                                 onClick={() => handleTestClick(test)}
                                                 disabled={!isAvailable}
                                                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all active:scale-[0.98] uppercase tracking-widest shadow-lg ${isAvailable
-                                                        ? 'bg-zinc-100 hover:bg-white text-black shadow-white/5'
-                                                        : 'bg-zinc-800 text-zinc-600 border border-zinc-700 cursor-not-allowed opacity-50'
+                                                    ? 'bg-zinc-100 hover:bg-white text-black shadow-white/5'
+                                                    : 'bg-zinc-800 text-zinc-600 border border-zinc-700 cursor-not-allowed opacity-50'
                                                     }`}
                                             >
                                                 {isAvailable ? (

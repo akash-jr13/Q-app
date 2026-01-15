@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Edit2, ArrowLeft, Layers, Save, X, Trophy, FileText, Rocket, Book, ChevronDown, AlertTriangle, ToggleLeft, ToggleRight, FileUp, FileCheck, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Edit2, ArrowLeft, Layers, Save, X, Trophy, FileText, Rocket, Book, AlertTriangle, ToggleLeft, ToggleRight, FileUp, FileCheck, Loader2 } from 'lucide-react';
 import { Series, TestSeriesItem } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { dbStore } from '../utils/db';
@@ -141,9 +141,9 @@ export const SeriesManager: React.FC<SeriesManagerProps> = ({ onExit }) => {
     const reader = new FileReader();
     reader.onload = () => {
       const base64String = reader.result as string;
-      updateTestInSeries(activeTestIdForUpload, { 
-        packageData: base64String, 
-        packageName: file.name 
+      updateTestInSeries(activeTestIdForUpload, {
+        packageData: base64String,
+        packageName: file.name
       });
       setActiveTestIdForUpload(null);
     };
@@ -170,19 +170,19 @@ export const SeriesManager: React.FC<SeriesManagerProps> = ({ onExit }) => {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-300 font-sans p-4 md:p-8 relative overflow-x-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(#3f3f46_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
-      
-      <input 
-        type="file" 
-        accept=".zip" 
-        ref={fileInputRef} 
-        onChange={handleFileUpload} 
-        className="hidden" 
+
+      <input
+        type="file"
+        accept=".zip"
+        ref={fileInputRef}
+        onChange={handleFileUpload}
+        className="hidden"
       />
 
-      <div className="max-w-5xl mx-auto space-y-6 md:space-y-8 relative z-10">
+      <div className="max-w-7xl mx-auto space-y-6 md:space-y-8 relative z-10">
         <header className="flex flex-col sm:flex-row justify-between items-center bg-zinc-900 p-4 md:p-6 rounded-2xl border border-zinc-800 shadow-xl gap-4">
           <div className="flex items-center gap-4 w-full sm:w-auto">
-            <button 
+            <button
               onClick={onExit}
               className="p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-500 hover:text-zinc-200 hover:border-zinc-700 transition-all shadow-sm active:scale-95"
             >
@@ -193,7 +193,7 @@ export const SeriesManager: React.FC<SeriesManagerProps> = ({ onExit }) => {
               <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono">Manage student practice catalogs</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => startEdit()}
             className="w-full sm:w-auto flex items-center justify-center gap-2 bg-zinc-100 hover:bg-white text-black px-6 py-2.5 rounded-xl text-xs font-bold transition-all shadow-lg uppercase tracking-widest active:scale-[0.98]"
           >
@@ -209,7 +209,7 @@ export const SeriesManager: React.FC<SeriesManagerProps> = ({ onExit }) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {seriesList.map(series => (
-              <div 
+              <div
                 key={series.id}
                 className="bg-zinc-900/50 border border-zinc-800 p-6 rounded-2xl hover:border-zinc-700 transition-all flex flex-col group relative"
               >
@@ -218,15 +218,15 @@ export const SeriesManager: React.FC<SeriesManagerProps> = ({ onExit }) => {
                     {getIcon(series.iconName)}
                   </div>
                   <div className="flex gap-1.5">
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); startEdit(series); }} 
+                    <button
+                      onClick={(e) => { e.stopPropagation(); startEdit(series); }}
                       className="p-2 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 rounded-lg transition-all active:scale-90"
                       title="Edit Series"
                     >
                       <Edit2 size={16} />
                     </button>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); setSeriesToDelete(series.id); }} 
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setSeriesToDelete(series.id); }}
                       className="p-2 text-zinc-500 hover:text-red-400 hover:bg-red-950/20 rounded-lg transition-all active:scale-90"
                       title="Delete Series"
                     >
@@ -287,16 +287,16 @@ export const SeriesManager: React.FC<SeriesManagerProps> = ({ onExit }) => {
               </h2>
               <button onClick={() => setIsModalOpen(false)} className="text-zinc-500 hover:text-zinc-200 p-1 hover:bg-zinc-800 rounded-lg transition-colors"><X size={20} /></button>
             </header>
-            
+
             <form onSubmit={saveSeries} className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">
                   <div>
                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 block">Series Title</label>
-                    <input 
+                    <input
                       required
                       value={editingSeries.title}
-                      onChange={e => setEditingSeries({...editingSeries, title: e.target.value})}
+                      onChange={e => setEditingSeries({ ...editingSeries, title: e.target.value })}
                       className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-zinc-500 transition-all font-mono text-zinc-200"
                       placeholder="e.g. JEE Mains Mock Series"
                     />
@@ -308,10 +308,9 @@ export const SeriesManager: React.FC<SeriesManagerProps> = ({ onExit }) => {
                         <button
                           key={name}
                           type="button"
-                          onClick={() => setEditingSeries({...editingSeries, iconName: name as any})}
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${
-                            editingSeries.iconName === name ? 'bg-zinc-100 border-zinc-100 text-black shadow-lg shadow-white/5 scale-105' : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700'
-                          }`}
+                          onClick={() => setEditingSeries({ ...editingSeries, iconName: name as any })}
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${editingSeries.iconName === name ? 'bg-zinc-100 border-zinc-100 text-black shadow-lg shadow-white/5 scale-105' : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700'
+                            }`}
                         >
                           {getIcon(name)}
                         </button>
@@ -321,10 +320,10 @@ export const SeriesManager: React.FC<SeriesManagerProps> = ({ onExit }) => {
                 </div>
                 <div>
                   <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 block">Description</label>
-                  <textarea 
+                  <textarea
                     rows={4}
                     value={editingSeries.description}
-                    onChange={e => setEditingSeries({...editingSeries, description: e.target.value})}
+                    onChange={e => setEditingSeries({ ...editingSeries, description: e.target.value })}
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-zinc-500 transition-all font-mono text-zinc-200 resize-none"
                     placeholder="Enter a short summary for students..."
                   />
@@ -334,7 +333,7 @@ export const SeriesManager: React.FC<SeriesManagerProps> = ({ onExit }) => {
               <div className="space-y-4">
                 <div className="flex justify-between items-center pb-2 border-b border-zinc-800">
                   <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Tests in Series ({editingSeries.tests.length})</h3>
-                  <button 
+                  <button
                     type="button"
                     onClick={addTestToSeries}
                     className="flex items-center gap-1.5 text-[10px] font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg border border-zinc-700 transition-colors uppercase"
@@ -342,100 +341,100 @@ export const SeriesManager: React.FC<SeriesManagerProps> = ({ onExit }) => {
                     <Plus size={12} /> Add Test
                   </button>
                 </div>
-                
+
                 <div className="grid grid-cols-1 gap-3">
                   {editingSeries.tests.map((test) => (
                     <div key={test.id} className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl flex flex-wrap gap-4 items-end animate-in fade-in slide-in-from-top-2 duration-200">
                       <div className="flex-1 min-w-[200px]">
                         <label className="text-[9px] font-bold text-zinc-600 uppercase mb-1 block">Title</label>
-                        <input 
+                        <input
                           value={test.title}
-                          onChange={e => updateTestInSeries(test.id, {title: e.target.value})}
+                          onChange={e => updateTestInSeries(test.id, { title: e.target.value })}
                           className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-zinc-600 transition-colors"
                         />
                       </div>
                       <div className="w-24">
                         <label className="text-[9px] font-bold text-zinc-600 uppercase mb-1 block">Duration</label>
-                        <input 
+                        <input
                           value={test.duration}
-                          onChange={e => updateTestInSeries(test.id, {duration: e.target.value})}
+                          onChange={e => updateTestInSeries(test.id, { duration: e.target.value })}
                           className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-zinc-600 transition-colors font-mono"
                         />
                       </div>
                       <div className="w-16">
                         <label className="text-[9px] font-bold text-zinc-600 uppercase mb-1 block">Qs</label>
-                        <input 
+                        <input
                           type="number"
                           value={test.questions}
-                          onChange={e => updateTestInSeries(test.id, {questions: parseInt(e.target.value) || 0})}
+                          onChange={e => updateTestInSeries(test.id, { questions: parseInt(e.target.value) || 0 })}
                           className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1.5 text-xs outline-none focus:border-zinc-600 transition-colors font-mono text-center"
                         />
                       </div>
                       <div className="w-16">
                         <label className="text-[9px] font-bold text-zinc-600 uppercase mb-1 block">Marks</label>
-                        <input 
+                        <input
                           type="number"
                           value={test.totalMarks}
-                          onChange={e => updateTestInSeries(test.id, {totalMarks: parseInt(e.target.value) || 0})}
+                          onChange={e => updateTestInSeries(test.id, { totalMarks: parseInt(e.target.value) || 0 })}
                           className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1.5 text-xs outline-none focus:border-zinc-600 transition-colors font-mono text-center"
                         />
                       </div>
-                      
+
                       <div className="flex items-center gap-1.5">
-                         <div className="flex flex-col items-center">
-                            <label className="text-[9px] font-bold text-zinc-600 uppercase mb-1 block">Status</label>
-                            <button 
-                              type="button"
-                              onClick={() => toggleTestEnabled(test.id)}
-                              title={test.isEnabled ? "Disable Test" : "Enable Test"}
-                              className={`p-2 rounded-lg border transition-all ${test.isEnabled ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500' : 'bg-zinc-800 border-zinc-700 text-zinc-600'}`}
-                            >
-                              {test.isEnabled ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
-                            </button>
-                         </div>
+                        <div className="flex flex-col items-center">
+                          <label className="text-[9px] font-bold text-zinc-600 uppercase mb-1 block">Status</label>
+                          <button
+                            type="button"
+                            onClick={() => toggleTestEnabled(test.id)}
+                            title={test.isEnabled ? "Disable Test" : "Enable Test"}
+                            className={`p-2 rounded-lg border transition-all ${test.isEnabled ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500' : 'bg-zinc-800 border-zinc-700 text-zinc-600'}`}
+                          >
+                            {test.isEnabled ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                          </button>
+                        </div>
 
-                         <div className="flex flex-col items-center">
-                            <label className="text-[9px] font-bold text-zinc-600 uppercase mb-1 block">Package</label>
-                            <button 
-                              type="button"
-                              onClick={() => triggerFileUpload(test.id)}
-                              title={test.packageData ? `Update Package: ${test.packageName}` : "Attach Test Package (.zip)"}
-                              className={`p-2 rounded-lg border transition-all ${test.packageData ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : 'bg-zinc-800 border-zinc-700 text-zinc-600'}`}
-                            >
-                              {test.packageData ? <FileCheck size={18} /> : <FileUp size={18} />}
-                            </button>
-                         </div>
+                        <div className="flex flex-col items-center">
+                          <label className="text-[9px] font-bold text-zinc-600 uppercase mb-1 block">Package</label>
+                          <button
+                            type="button"
+                            onClick={() => triggerFileUpload(test.id)}
+                            title={test.packageData ? `Update Package: ${test.packageName}` : "Attach Test Package (.zip)"}
+                            className={`p-2 rounded-lg border transition-all ${test.packageData ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : 'bg-zinc-800 border-zinc-700 text-zinc-600'}`}
+                          >
+                            {test.packageData ? <FileCheck size={18} /> : <FileUp size={18} />}
+                          </button>
+                        </div>
 
-                         <div className="flex flex-col items-center">
-                            <label className="text-[9px] font-bold text-zinc-600 uppercase mb-1 block">Del</label>
-                            <button 
-                              type="button"
-                              onClick={() => removeTestFromSeries(test.id)}
-                              className="p-2 text-zinc-600 hover:text-red-400 transition-colors active:scale-90"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                         </div>
+                        <div className="flex flex-col items-center">
+                          <label className="text-[9px] font-bold text-zinc-600 uppercase mb-1 block">Del</label>
+                          <button
+                            type="button"
+                            onClick={() => removeTestFromSeries(test.id)}
+                            className="p-2 text-zinc-600 hover:text-red-400 transition-colors active:scale-90"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
                   {editingSeries.tests.length === 0 && (
-                      <div className="py-10 text-center border border-dashed border-zinc-800 rounded-xl text-zinc-600 font-mono text-xs uppercase tracking-widest">
-                          No tests added to this series yet.
-                      </div>
+                    <div className="py-10 text-center border border-dashed border-zinc-800 rounded-xl text-zinc-600 font-mono text-xs uppercase tracking-widest">
+                      No tests added to this series yet.
+                    </div>
                   )}
                 </div>
               </div>
 
               <div className="pt-8 border-t border-zinc-900 flex justify-end gap-4">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setIsModalOpen(false)}
                   className="px-6 py-2.5 rounded-xl border border-zinc-800 text-zinc-400 hover:bg-zinc-900 font-bold text-xs uppercase tracking-widest transition-all"
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   type="submit"
                   className="bg-zinc-100 hover:bg-white text-black px-10 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all flex items-center gap-2"
                 >

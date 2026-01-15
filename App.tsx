@@ -68,7 +68,7 @@ const App: React.FC = () => {
       case 'dashboard':
         return (
           <main className="flex-1 overflow-y-auto relative flex flex-col items-center justify-center p-8">
-            <div className="w-full max-w-4xl space-y-12">
+            <div className="w-full max-w-7xl space-y-12">
               <div className="space-y-4">
                 <h1 className="text-5xl font-bold tracking-tighter uppercase font-mono">
                   {userProfile ? `Welcome, ${userProfile.fullName.split(' ')[0]}` : 'Command Center'}
