@@ -1,0 +1,5 @@
+{
+  "name": "PDF Question Mapper",
+  "description": "A dark-themed dashboard for mapping test questions to PDF regions with cropping and annotation tools.",
+  "requestFramePermissions": []
+}
