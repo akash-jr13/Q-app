@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Trophy, Activity, ListChecks, Zap } from 'lucide-react';
+import { Trophy, Activity } from 'lucide-react';
 import { Panel, formatTimeDetailed, formatTime } from './AnalysisShared';
 
 interface DashboardTabProps {

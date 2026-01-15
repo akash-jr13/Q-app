@@ -1,18 +1,15 @@
 
 import React, { useState } from 'react';
-import { LayoutDashboard, Brain, Zap, Target, Sparkles, ChevronRight, ShieldCheck, Flame, ArrowUpRight, ArrowDownRight, ArrowRight } from 'lucide-react';
+import { LayoutDashboard, Brain, Zap, Target, Sparkles, ChevronRight, ShieldCheck, Flame, ArrowRight } from 'lucide-react';
 import { Metric, IntelWidget } from './AnalysisShared';
 
 type IntelLayer = 'executive' | 'knowledge' | 'behavior' | 'strategy' | 'actions';
 
 interface IntelligenceTabProps {
   stats: any;
-  results: any[];
-  mistakes: any;
-  onViewQuestion: (q: any) => void;
 }
 
-export const IntelligenceTab: React.FC<IntelligenceTabProps> = ({ stats, results, mistakes, onViewQuestion }) => {
+export const IntelligenceTab: React.FC<IntelligenceTabProps> = ({ stats }) => {
   const [activeLayer, setActiveLayer] = useState<IntelLayer>('executive');
 
   return (
@@ -23,11 +20,10 @@ export const IntelligenceTab: React.FC<IntelligenceTabProps> = ({ stats, results
           <button
             key={layer}
             onClick={() => setActiveLayer(layer)}
-            className={`flex items-center gap-3 p-4 rounded-2xl transition-all border font-mono text-[10px] font-bold uppercase tracking-widest ${
-              activeLayer === layer 
-              ? 'bg-zinc-100 text-black border-white shadow-xl scale-[1.02]' 
+            className={`flex items-center gap-3 p-4 rounded-2xl transition-all border font-mono text-[10px] font-bold uppercase tracking-widest ${activeLayer === layer
+              ? 'bg-zinc-100 text-black border-white shadow-xl scale-[1.02]'
               : 'bg-zinc-900/50 text-zinc-500 border-zinc-800 hover:text-zinc-300 hover:border-zinc-700'
-            }`}
+              }`}
           >
             {layer === 'executive' && <LayoutDashboard size={14} />}
             {layer === 'knowledge' && <Brain size={14} />}
@@ -64,9 +60,9 @@ export const IntelligenceTab: React.FC<IntelligenceTabProps> = ({ stats, results
                 </div>
                 <div className="space-y-4">
                   <p className="text-sm text-zinc-300 font-mono leading-relaxed">
-                    Your performance is currently <strong className={stats.accuracy < 50 ? 'text-red-400' : 'text-emerald-400'}>{stats.accuracy < 50 ? "Unstable" : "Solid"}</strong>. 
-                    {stats.accuracy < 50 
-                      ? " Friction detected in fundamental topics. Immediate theoretical revision required." 
+                    Your performance is currently <strong className={stats.accuracy < 50 ? 'text-red-400' : 'text-emerald-400'}>{stats.accuracy < 50 ? "Unstable" : "Solid"}</strong>.
+                    {stats.accuracy < 50
+                      ? " Friction detected in fundamental topics. Immediate theoretical revision required."
                       : " Efficiency is high. Score ceiling is now determined by calculation precision."}
                   </p>
                 </div>
@@ -77,14 +73,14 @@ export const IntelligenceTab: React.FC<IntelligenceTabProps> = ({ stats, results
 
         {activeLayer === 'knowledge' && (
           <div className="space-y-6">
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-               {stats.topicStats.map((s: any) => (
-                 <div key={s.topic} className="p-6 bg-zinc-900/40 border border-zinc-800 rounded-3xl flex flex-col gap-2 shadow-sm">
-                   <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{s.topic} Mastery</span>
-                   <span className={`text-2xl font-mono font-bold ${s.accuracy > 70 ? 'text-emerald-400' : s.accuracy > 40 ? 'text-amber-400' : 'text-red-400'}`}>{Math.round(s.accuracy)}%</span>
-                 </div>
-               ))}
-             </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {stats.topicStats.map((s: any) => (
+                <div key={s.topic} className="p-6 bg-zinc-900/40 border border-zinc-800 rounded-3xl flex flex-col gap-2 shadow-sm">
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{s.topic} Mastery</span>
+                  <span className={`text-2xl font-mono font-bold ${s.accuracy > 70 ? 'text-emerald-400' : s.accuracy > 40 ? 'text-amber-400' : 'text-red-400'}`}>{Math.round(s.accuracy)}%</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

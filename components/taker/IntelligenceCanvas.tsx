@@ -1,14 +1,12 @@
 
 import React, { useState, useMemo } from 'react';
-import { 
-  Brain, 
-  Zap, 
-  Target, 
-  Clock, 
-  AlertCircle, 
-  ChevronRight, 
+import {
+  Brain,
+  Zap,
+  Target,
+  AlertCircle,
+  ChevronRight,
   LayoutDashboard,
-  Dna,
   ShieldCheck,
   ChevronLeft,
   ArrowRight,
@@ -23,10 +21,9 @@ import {
   Flame,
   LineChart,
   Eye,
-  Check,
   X
 } from 'lucide-react';
-import { QuestionData, DifficultyLevel } from '../../types';
+import { QuestionData } from '../../types';
 
 interface IntelligenceCanvasProps {
   testName: string;
@@ -160,7 +157,7 @@ export const IntelligenceCanvas: React.FC<IntelligenceCanvasProps> = ({ testName
   return (
     <div className="min-h-screen bg-zinc-950 font-sans text-zinc-300 relative selection:bg-zinc-100 selection:text-black">
       <div className="fixed inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:32px_32px] opacity-10 pointer-events-none" />
-      
+
       <header className="h-16 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-900 sticky top-0 z-40 px-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button onClick={onExit} className="p-2 hover:bg-zinc-900 rounded-xl transition-colors text-zinc-500 hover:text-zinc-100">
@@ -182,7 +179,7 @@ export const IntelligenceCanvas: React.FC<IntelligenceCanvasProps> = ({ testName
       </header>
 
       <div className="max-w-[1600px] mx-auto flex min-h-[calc(100vh-64px)]">
-        
+
         {/* SIDEBAR */}
         <aside className="w-20 md:w-64 border-r border-zinc-900 shrink-0 bg-zinc-950/50 z-30 flex flex-col pt-8">
           <nav className="flex-1 px-4 space-y-2">
@@ -190,9 +187,8 @@ export const IntelligenceCanvas: React.FC<IntelligenceCanvasProps> = ({ testName
               <button
                 key={layer}
                 onClick={() => setActiveLayer(layer)}
-                className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all group ${
-                  activeLayer === layer ? 'bg-zinc-100 text-black shadow-xl scale-[1.02]' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/50'
-                }`}
+                className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all group ${activeLayer === layer ? 'bg-zinc-100 text-black shadow-xl scale-[1.02]' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/50'
+                  }`}
               >
                 <div className="shrink-0"><LayerIcon layer={layer} /></div>
                 <span className="text-[11px] font-bold uppercase tracking-widest hidden md:block">{layer}</span>
@@ -201,14 +197,14 @@ export const IntelligenceCanvas: React.FC<IntelligenceCanvasProps> = ({ testName
             ))}
           </nav>
           <div className="p-6 border-t border-zinc-900 text-center">
-             <span className="text-[9px] font-bold text-zinc-800 uppercase tracking-[0.2em]">Designed by @AkashJR</span>
+            <span className="text-[9px] font-bold text-zinc-800 uppercase tracking-[0.2em]">Designed by @AkashJR</span>
           </div>
         </aside>
 
         {/* MAIN CONTENT */}
         <main className="flex-1 p-6 md:p-10 overflow-y-auto relative z-10 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
           <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            
+
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-zinc-900 pb-8">
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
@@ -236,7 +232,7 @@ export const IntelligenceCanvas: React.FC<IntelligenceCanvasProps> = ({ testName
                       <div className="space-y-2">
                         <h4 className="text-sm font-bold text-zinc-100 uppercase tracking-widest">Diagnostic Summary</h4>
                         <p className="text-xs text-zinc-400 leading-relaxed font-mono">
-                          {stats.accuracy < 50 
+                          {stats.accuracy < 50
                             ? "Your score is primarily limited by conceptual instability. High friction detected in Section A subjects. Immediate theoretical revision required."
                             : "Solid performance detected. Score improvement is now capped by time efficiency rather than knowledge gaps. Optimize attempt order."}
                         </p>
@@ -244,49 +240,49 @@ export const IntelligenceCanvas: React.FC<IntelligenceCanvasProps> = ({ testName
                     </div>
                     <div className="grid grid-cols-2 gap-6">
                       <div className="space-y-4">
-                         <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] block">✔ Score Drivers</span>
-                         <ul className="space-y-2">
-                            <li className="flex items-center gap-2 text-[11px] text-zinc-300 font-mono"><ArrowUpRight size={12} className="text-emerald-500" /> High accuracy in {stats.subStats.sort((a,b)=>b.accuracy-a.accuracy)[0]?.name}</li>
-                            <li className="flex items-center gap-2 text-[11px] text-zinc-300 font-mono"><ArrowUpRight size={12} className="text-emerald-500" /> {stats.correct} Precision Attempts</li>
-                         </ul>
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] block">✔ Score Drivers</span>
+                        <ul className="space-y-2">
+                          <li className="flex items-center gap-2 text-[11px] text-zinc-300 font-mono"><ArrowUpRight size={12} className="text-emerald-500" /> High accuracy in {stats.subStats.sort((a, b) => b.accuracy - a.accuracy)[0]?.name}</li>
+                          <li className="flex items-center gap-2 text-[11px] text-zinc-300 font-mono"><ArrowUpRight size={12} className="text-emerald-500" /> {stats.correct} Precision Attempts</li>
+                        </ul>
                       </div>
                       <div className="space-y-4">
-                         <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] block">❌ Score Drainers</span>
-                         <ul className="space-y-2">
-                            <li className="flex items-center gap-2 text-[11px] text-zinc-300 font-mono"><ArrowDownRight size={12} className="text-red-500" /> {stats.incorrect} Negative Penalties</li>
-                            <li className="flex items-center gap-2 text-[11px] text-zinc-300 font-mono"><ArrowDownRight size={12} className="text-red-500" /> Time waste in Hard Qs</li>
-                         </ul>
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] block">❌ Score Drainers</span>
+                        <ul className="space-y-2">
+                          <li className="flex items-center gap-2 text-[11px] text-zinc-300 font-mono"><ArrowDownRight size={12} className="text-red-500" /> {stats.incorrect} Negative Penalties</li>
+                          <li className="flex items-center gap-2 text-[11px] text-zinc-300 font-mono"><ArrowDownRight size={12} className="text-red-500" /> Time waste in Hard Qs</li>
+                        </ul>
                       </div>
                     </div>
                   </div>
                 </Widget>
 
                 <Widget title="Efficiency Metrics" icon={Zap}>
-                    <div className="space-y-6">
-                       <Metric label="Time Utilized" value={`${Math.round(results.reduce((a,b)=>a+b.time, 0)/60)} min`} sub="of 180 available" />
-                       <div className="h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
-                          <div className="h-full bg-zinc-100" style={{ width: `${(results.reduce((a,b)=>a+b.time,0)/10800)*100}%` }} />
-                       </div>
-                       <Metric label="Panic Index" value={stats.incorrect > 5 ? "Elevated" : "Normal"} sub="Strategic stability" color={stats.incorrect > 5 ? 'text-red-400' : 'text-emerald-400'} />
+                  <div className="space-y-6">
+                    <Metric label="Time Utilized" value={`${Math.round(results.reduce((a, b) => a + b.time, 0) / 60)} min`} sub="of 180 available" />
+                    <div className="h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-zinc-100" style={{ width: `${(results.reduce((a, b) => a + b.time, 0) / 10800) * 100}%` }} />
                     </div>
+                    <Metric label="Panic Index" value={stats.incorrect > 5 ? "Elevated" : "Normal"} sub="Strategic stability" color={stats.incorrect > 5 ? 'text-red-400' : 'text-emerald-400'} />
+                  </div>
                 </Widget>
 
                 <Widget title="Difficulty Response" className="md:col-span-3" icon={LineChart}>
-                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                      {['Easy', 'Medium', 'Hard'].map(d => {
-                        const dr = results.filter(r => r.difficulty === d);
-                        const acc = dr.length > 0 ? Math.round((dr.filter(x=>x.status==='correct').length / dr.length) * 100) : 0;
-                        return (
-                          <div key={d} className="space-y-4">
-                             <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{d} Accuracy</span>
-                             <div className="text-3xl font-mono font-bold text-zinc-100">{acc}%</div>
-                             <div className="h-1.5 w-24 mx-auto bg-zinc-950 rounded-full border border-zinc-800 overflow-hidden">
-                                <div className={`h-full ${acc > 70 ? 'bg-emerald-500' : acc > 40 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${acc}%` }} />
-                             </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    {['Easy', 'Medium', 'Hard'].map(d => {
+                      const dr = results.filter(r => r.difficulty === d);
+                      const acc = dr.length > 0 ? Math.round((dr.filter(x => x.status === 'correct').length / dr.length) * 100) : 0;
+                      return (
+                        <div key={d} className="space-y-4">
+                          <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{d} Accuracy</span>
+                          <div className="text-3xl font-mono font-bold text-zinc-100">{acc}%</div>
+                          <div className="h-1.5 w-24 mx-auto bg-zinc-950 rounded-full border border-zinc-800 overflow-hidden">
+                            <div className={`h-full ${acc > 70 ? 'bg-emerald-500' : acc > 40 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${acc}%` }} />
                           </div>
-                        )
-                      })}
-                   </div>
+                        </div>
+                      )
+                    })}
+                  </div>
                 </Widget>
               </div>
             )}
@@ -295,32 +291,32 @@ export const IntelligenceCanvas: React.FC<IntelligenceCanvasProps> = ({ testName
             {activeLayer === 'knowledge' && (
               <div className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                   {stats.subStats.map(s => (
-                     <div key={s.name} className="p-6 bg-zinc-900/40 border border-zinc-800 rounded-3xl flex flex-col gap-2 shadow-sm">
-                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{s.name} Mastery</span>
-                        <span className={`text-2xl font-mono font-bold ${s.accuracy > 70 ? 'text-emerald-400' : s.accuracy > 40 ? 'text-amber-400' : 'text-red-400'}`}>{s.accuracy}%</span>
-                        <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-tighter">{s.count} Items Assessed</span>
-                     </div>
-                   ))}
+                  {stats.subStats.map(s => (
+                    <div key={s.name} className="p-6 bg-zinc-900/40 border border-zinc-800 rounded-3xl flex flex-col gap-2 shadow-sm">
+                      <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{s.name} Mastery</span>
+                      <span className={`text-2xl font-mono font-bold ${s.accuracy > 70 ? 'text-emerald-400' : s.accuracy > 40 ? 'text-amber-400' : 'text-red-400'}`}>{s.accuracy}%</span>
+                      <span className="text-[9px] text-zinc-600 font-mono uppercase tracking-tighter">{s.count} Items Assessed</span>
+                    </div>
+                  ))}
                 </div>
                 <Widget title="Concept Leak Audit" icon={Brain}>
-                   <div className="space-y-1">
-                      {results.filter(r => r.status === 'incorrect').map(r => (
-                        <div key={r.id} className="flex items-center justify-between p-3 border-b border-zinc-800/50 group hover:bg-zinc-800/20 transition-colors cursor-pointer" onClick={() => { setViewingQuestionId(r.id); setActiveLayer('review'); }}>
-                           <div className="flex items-center gap-4">
-                              <span className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 text-[10px] font-bold font-mono">Q{r.questionNumber}</span>
-                              <div>
-                                 <h5 className="text-[11px] font-bold text-zinc-200 uppercase tracking-widest">{r.subject}</h5>
-                                 <p className="text-[9px] text-zinc-600 font-mono uppercase tracking-tighter">Mistake Captured • {r.difficulty}</p>
-                              </div>
-                           </div>
-                           <span className="text-[10px] font-bold text-zinc-500 group-hover:text-zinc-200 transition-colors uppercase">View Q <ChevronRight size={10} className="inline ml-1" /></span>
+                  <div className="space-y-1">
+                    {results.filter(r => r.status === 'incorrect').map(r => (
+                      <div key={r.id} className="flex items-center justify-between p-3 border-b border-zinc-800/50 group hover:bg-zinc-800/20 transition-colors cursor-pointer" onClick={() => { setViewingQuestionId(r.id); setActiveLayer('review'); }}>
+                        <div className="flex items-center gap-4">
+                          <span className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 text-[10px] font-bold font-mono">Q{r.questionNumber}</span>
+                          <div>
+                            <h5 className="text-[11px] font-bold text-zinc-200 uppercase tracking-widest">{r.subject}</h5>
+                            <p className="text-[9px] text-zinc-600 font-mono uppercase tracking-tighter">Mistake Captured • {r.difficulty}</p>
+                          </div>
                         </div>
-                      ))}
-                      {results.filter(r => r.status === 'incorrect').length === 0 && (
-                        <div className="py-20 text-center text-zinc-700 font-mono text-xs uppercase tracking-widest">No critical leaks detected.</div>
-                      )}
-                   </div>
+                        <span className="text-[10px] font-bold text-zinc-500 group-hover:text-zinc-200 transition-colors uppercase">View Q <ChevronRight size={10} className="inline ml-1" /></span>
+                      </div>
+                    ))}
+                    {results.filter(r => r.status === 'incorrect').length === 0 && (
+                      <div className="py-20 text-center text-zinc-700 font-mono text-xs uppercase tracking-widest">No critical leaks detected.</div>
+                    )}
+                  </div>
                 </Widget>
               </div>
             )}
@@ -329,37 +325,37 @@ export const IntelligenceCanvas: React.FC<IntelligenceCanvasProps> = ({ testName
             {activeLayer === 'behavior' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <Widget title="Solving Behavioral Profile" icon={HistoryIcon}>
-                   <div className="space-y-6">
-                      <div className="flex justify-between items-center p-4 bg-zinc-950 rounded-2xl border border-zinc-800">
-                         <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Rushed Attempts</span>
-                         <span className="text-xl font-mono font-bold text-red-400">{results.filter(r => r.time < 30 && r.status === 'incorrect').length}</span>
-                      </div>
-                      <div className="flex justify-between items-center p-4 bg-zinc-950 rounded-2xl border border-zinc-800">
-                         <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Over-Analysis Qs</span>
-                         <span className="text-xl font-mono font-bold text-zinc-200">{results.filter(r => r.isOvertime).length}</span>
-                      </div>
-                      <div className="flex justify-between items-center p-4 bg-zinc-950 rounded-2xl border border-zinc-800">
-                         <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Skips After Effort</span>
-                         <span className="text-xl font-mono font-bold text-zinc-200">{results.filter(r => r.time > 60 && r.status === 'unanswered').length}</span>
-                      </div>
-                   </div>
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-center p-4 bg-zinc-950 rounded-2xl border border-zinc-800">
+                      <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Rushed Attempts</span>
+                      <span className="text-xl font-mono font-bold text-red-400">{results.filter(r => r.time < 30 && r.status === 'incorrect').length}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-4 bg-zinc-950 rounded-2xl border border-zinc-800">
+                      <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Over-Analysis Qs</span>
+                      <span className="text-xl font-mono font-bold text-zinc-200">{results.filter(r => r.isOvertime).length}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-4 bg-zinc-950 rounded-2xl border border-zinc-800">
+                      <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Skips After Effort</span>
+                      <span className="text-xl font-mono font-bold text-zinc-200">{results.filter(r => r.time > 60 && r.status === 'unanswered').length}</span>
+                    </div>
+                  </div>
                 </Widget>
                 <Widget title="Mistake Type Distribution" icon={AlertCircle}>
-                   <div className="h-full flex flex-col justify-center gap-6 py-4">
-                      {MISTAKE_OPTIONS.filter(o => o !== 'None').map(opt => {
-                        const count = Object.values(mistakes).filter(v => v === opt).length;
-                        const percentage = results.filter(r => r.status === 'incorrect').length > 0 
-                           ? (count / results.filter(r => r.status === 'incorrect').length) * 100 
-                           : 0;
-                        return (
-                          <div key={opt} className="space-y-2">
-                             <div className="flex justify-between text-[10px] font-bold text-zinc-500 uppercase"><span>{opt} Errors</span><span>{count} Qs</span></div>
-                             <div className="h-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-full overflow-hidden"><div className="h-full bg-zinc-400" style={{width: `${percentage}%`}} /></div>
-                          </div>
-                        );
-                      })}
-                      {Object.keys(mistakes).length === 0 && <p className="text-[10px] text-zinc-600 font-mono italic">Tag your mistakes in the "Review" tab to see analysis.</p>}
-                   </div>
+                  <div className="h-full flex flex-col justify-center gap-6 py-4">
+                    {MISTAKE_OPTIONS.filter(o => o !== 'None').map(opt => {
+                      const count = Object.values(mistakes).filter(v => v === opt).length;
+                      const percentage = results.filter(r => r.status === 'incorrect').length > 0
+                        ? (count / results.filter(r => r.status === 'incorrect').length) * 100
+                        : 0;
+                      return (
+                        <div key={opt} className="space-y-2">
+                          <div className="flex justify-between text-[10px] font-bold text-zinc-500 uppercase"><span>{opt} Errors</span><span>{count} Qs</span></div>
+                          <div className="h-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-full overflow-hidden"><div className="h-full bg-zinc-400" style={{ width: `${percentage}%` }} /></div>
+                        </div>
+                      );
+                    })}
+                    {Object.keys(mistakes).length === 0 && <p className="text-[10px] text-zinc-600 font-mono italic">Tag your mistakes in the "Review" tab to see analysis.</p>}
+                  </div>
                 </Widget>
               </div>
             )}
@@ -368,26 +364,26 @@ export const IntelligenceCanvas: React.FC<IntelligenceCanvasProps> = ({ testName
             {activeLayer === 'strategy' && (
               <div className="space-y-6">
                 <Widget title="Attempt Order Audit" icon={Target}>
-                   <div className="space-y-6">
-                      <div className="p-6 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-4">
-                         <h5 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2"><ArrowRight size={12} /> Strategic Sequence</h5>
-                         <p className="text-xs text-zinc-400 font-mono leading-relaxed">
-                            {results.findIndex(r=>r.difficulty==='Hard') < results.findIndex(r=>r.difficulty==='Easy') 
-                               ? "⚠ Strategic Flaw: You attempted Hard questions before clearing Easy ones. This increased cognitive load early in the test."
-                               : "✔ Strategic Soundness: You prioritized Easy questions, securing a safety score before attempting complex items."}
-                         </p>
+                  <div className="space-y-6">
+                    <div className="p-6 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-4">
+                      <h5 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2"><ArrowRight size={12} /> Strategic Sequence</h5>
+                      <p className="text-xs text-zinc-400 font-mono leading-relaxed">
+                        {results.findIndex(r => r.difficulty === 'Hard') < results.findIndex(r => r.difficulty === 'Easy')
+                          ? "⚠ Strategic Flaw: You attempted Hard questions before clearing Easy ones. This increased cognitive load early in the test."
+                          : "✔ Strategic Soundness: You prioritized Easy questions, securing a safety score before attempting complex items."}
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 flex flex-col gap-2">
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Attempt Rate</span>
+                        <span className="text-2xl font-mono font-bold text-zinc-100">{Math.round((results.filter(r => r.status !== 'unanswered').length / results.length) * 100)}%</span>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                         <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 flex flex-col gap-2">
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Attempt Rate</span>
-                            <span className="text-2xl font-mono font-bold text-zinc-100">{Math.round((results.filter(r=>r.status!=='unanswered').length/results.length)*100)}%</span>
-                         </div>
-                         <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 flex flex-col gap-2">
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Efficiency Points</span>
-                            <span className="text-2xl font-mono font-bold text-emerald-400">+{(stats.correct * 3).toFixed(1)}</span>
-                         </div>
+                      <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 flex flex-col gap-2">
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Efficiency Points</span>
+                        <span className="text-2xl font-mono font-bold text-emerald-400">+{(stats.correct * 3).toFixed(1)}</span>
                       </div>
-                   </div>
+                    </div>
+                  </div>
                 </Widget>
               </div>
             )}
@@ -402,28 +398,28 @@ export const IntelligenceCanvas: React.FC<IntelligenceCanvasProps> = ({ testName
                   <h3 className="text-3xl font-bold text-zinc-100 tracking-tight">Your 7-Day Roadmap</h3>
                   <p className="text-zinc-500 text-sm font-mono max-w-lg mx-auto uppercase tracking-tighter italic">Precision-generated based on behavioral & knowledge assessment</p>
                 </div>
-                
+
                 <div className="grid grid-cols-1 gap-4">
-                    <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl flex items-center justify-between group hover:border-emerald-500/50 transition-all cursor-default">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-emerald-400"><Minus size={18} className="rotate-90" /></div>
-                        <div className="space-y-1 text-left">
-                          <h6 className="text-[11px] font-bold text-zinc-100 uppercase tracking-widest">Revise {stats.subStats.sort((a,b)=>a.accuracy-b.accuracy)[0]?.name} Fundamentals</h6>
-                          <p className="text-[9px] text-zinc-600 font-mono uppercase">Priority High • 4 Hours Target</p>
-                        </div>
+                  <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl flex items-center justify-between group hover:border-emerald-500/50 transition-all cursor-default">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-emerald-400"><Minus size={18} className="rotate-90" /></div>
+                      <div className="space-y-1 text-left">
+                        <h6 className="text-[11px] font-bold text-zinc-100 uppercase tracking-widest">Revise {stats.subStats.sort((a, b) => a.accuracy - b.accuracy)[0]?.name} Fundamentals</h6>
+                        <p className="text-[9px] text-zinc-600 font-mono uppercase">Priority High • 4 Hours Target</p>
                       </div>
-                      <ArrowRight size={20} className="text-zinc-800 group-hover:text-emerald-500 transition-colors" />
                     </div>
-                    <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl flex items-center justify-between group hover:border-amber-500/50 transition-all cursor-default">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-amber-400"><Zap size={18} /></div>
-                        <div className="space-y-1 text-left">
-                          <h6 className="text-[11px] font-bold text-zinc-100 uppercase tracking-widest">Speed Drill: Level-1 Problems</h6>
-                          <p className="text-[9px] text-zinc-600 font-mono uppercase">Correctness optimization • 2 Sessions</p>
-                        </div>
+                    <ArrowRight size={20} className="text-zinc-800 group-hover:text-emerald-500 transition-colors" />
+                  </div>
+                  <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl flex items-center justify-between group hover:border-amber-500/50 transition-all cursor-default">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-amber-400"><Zap size={18} /></div>
+                      <div className="space-y-1 text-left">
+                        <h6 className="text-[11px] font-bold text-zinc-100 uppercase tracking-widest">Speed Drill: Level-1 Problems</h6>
+                        <p className="text-[9px] text-zinc-600 font-mono uppercase">Correctness optimization • 2 Sessions</p>
                       </div>
-                      <ArrowRight size={20} className="text-zinc-800 group-hover:text-amber-500 transition-colors" />
                     </div>
+                    <ArrowRight size={20} className="text-zinc-800 group-hover:text-amber-500 transition-colors" />
+                  </div>
                 </div>
               </div>
             )}
@@ -451,11 +447,10 @@ export const IntelligenceCanvas: React.FC<IntelligenceCanvasProps> = ({ testName
                             <tr key={r.id} className="hover:bg-zinc-800/10 transition-colors group">
                               <td className="px-6 py-4 font-bold text-zinc-100">{r.questionNumber}</td>
                               <td className="px-6 py-4">
-                                <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest border ${
-                                  r.status === 'correct' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
-                                  r.status === 'incorrect' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 
-                                  'bg-zinc-800 text-zinc-500 border-zinc-700'
-                                }`}>
+                                <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest border ${r.status === 'correct' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                  r.status === 'incorrect' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                    'bg-zinc-800 text-zinc-500 border-zinc-700'
+                                  }`}>
                                   {r.status}
                                 </span>
                               </td>
@@ -482,50 +477,50 @@ export const IntelligenceCanvas: React.FC<IntelligenceCanvasProps> = ({ testName
       {/* QUESTION REVIEW MODAL */}
       {viewingQuestionId && viewingQuestion && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-200">
-            <div className="bg-zinc-950 border border-zinc-800 rounded-[2.5rem] shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-200 ring-1 ring-white/10">
-                <div className="bg-zinc-900/50 px-8 py-6 border-b border-zinc-800 flex justify-between items-center shrink-0">
-                    <div className="flex items-center gap-6">
-                        <div className="w-12 h-12 bg-zinc-950 border border-zinc-800 rounded-2xl flex items-center justify-center text-zinc-100 font-mono font-bold text-xl shadow-inner">{viewingQuestion.questionNumber}</div>
-                        <div><h3 className="font-bold text-zinc-100 text-lg uppercase tracking-widest">{viewingQuestion.subject}</h3><span className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">{viewingQuestion.type} • Detailed Review</span></div>
-                    </div>
-                    <button onClick={() => setViewingQuestionId(null)} className="text-zinc-500 hover:text-zinc-100 p-3 hover:bg-zinc-800 rounded-2xl transition-all"><X size={24} /></button>
-                </div>
-                <div className="flex-1 overflow-y-auto p-8 flex flex-col items-center gap-8">
-                      <div className="bg-white rounded-[2rem] p-4 border border-zinc-800 shadow-2xl max-w-full"><img src={(viewingQuestion as any).imageUrl} className="max-w-full h-auto max-h-[40vh] object-contain rounded-xl" alt="Q-Image" /></div>
-                      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="bg-emerald-500/5 border border-emerald-500/20 p-8 rounded-[2rem] space-y-4">
-                              <div className="flex items-center gap-2 text-emerald-500"><CheckCircle2 size={16} strokeWidth={3} /><span className="text-[10px] font-bold uppercase tracking-widest">Correct Answer</span></div>
-                              <div className="text-4xl font-mono font-bold text-emerald-400">{viewingQuestion.correctOption}</div>
-                          </div>
-                          <div className={`p-8 rounded-[2rem] space-y-4 border ${viewingQuestion.status === 'correct' ? 'bg-emerald-500/5 border-emerald-500/20' : viewingQuestion.status === 'incorrect' ? 'bg-red-500/5 border-red-500/20' : 'bg-zinc-900 border-zinc-800'}`}>
-                              <div className="flex items-center gap-2"><span className={`text-[10px] font-bold uppercase tracking-widest ${viewingQuestion.status === 'correct' ? 'text-emerald-500' : 'text-red-400'}`}>Your Response</span></div>
-                              <div className={`text-4xl font-mono font-bold ${viewingQuestion.status === 'correct' ? 'text-emerald-400' : 'text-red-400'}`}>{viewingQuestion.userAnswer || "NO INPUT"}</div>
-                          </div>
-                      </div>
-
-                      {viewingQuestion.status === 'incorrect' && (
-                        <div className="w-full max-w-4xl bg-zinc-900/50 border border-zinc-800 p-6 rounded-[2rem]">
-                            <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2"><Brain size={14} /> Behavioral Profiling</h4>
-                            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                                {MISTAKE_OPTIONS.map(opt => (
-                                    <button key={opt} onClick={() => toggleMistake(viewingQuestion.id, opt)} className={`px-2 py-3 rounded-xl border text-[9px] font-bold uppercase transition-all ${mistakes[viewingQuestion.id] === opt ? 'bg-zinc-100 text-black border-zinc-100' : 'bg-zinc-950 border-zinc-800 text-zinc-600 hover:border-zinc-700'}`}>{opt}</button>
-                                ))}
-                            </div>
-                        </div>
-                      )}
-
-                      <div className="w-full max-w-4xl flex items-center justify-between pb-12">
-                        <div className="flex gap-4">
-                            <div className="bg-zinc-900 px-6 py-3 rounded-2xl border border-zinc-800 shadow-sm"><span className="text-[9px] font-bold text-zinc-500 block uppercase mb-1">Time spent</span><span className="text-zinc-200 font-mono font-bold text-sm">{formatTime(viewingQuestion.time)}</span></div>
-                            <div className="bg-zinc-900 px-6 py-3 rounded-2xl border border-zinc-800 shadow-sm"><span className={`text-[9px] font-bold ${viewingQuestion.marks > 0 ? 'text-emerald-400' : viewingQuestion.marks < 0 ? 'text-red-400' : 'text-zinc-400'} block uppercase mb-1`}>Marks</span><span className={`font-mono font-bold text-sm ${viewingQuestion.marks > 0 ? 'text-emerald-400' : viewingQuestion.marks < 0 ? 'text-red-400' : 'text-zinc-400'}`}>{viewingQuestion.marks > 0 ? '+' : ''}{viewingQuestion.marks.toFixed(1)}</span></div>
-                        </div>
-                        <div className="flex gap-3">
-                              <button onClick={() => { const idx = results.findIndex(r => r.id === viewingQuestionId); if (idx > 0) setViewingQuestionId(results[idx-1].id); }} disabled={results.findIndex(r => r.id === viewingQuestionId) <= 0} className="bg-zinc-900 hover:bg-zinc-800 text-zinc-100 px-6 py-3 rounded-2xl border border-zinc-800 text-[10px] font-bold transition-all uppercase tracking-widest disabled:opacity-30 flex items-center gap-2"><ChevronLeft size={16} /> Prev</button>
-                              <button onClick={() => { const idx = results.findIndex(r => r.id === viewingQuestionId); if (idx < results.length - 1) setViewingQuestionId(results[idx+1].id); }} disabled={results.findIndex(r => r.id === viewingQuestionId) >= results.length - 1} className="bg-zinc-100 hover:bg-white text-black px-6 py-3 rounded-2xl font-bold text-[10px] transition-all uppercase tracking-widest shadow-lg flex items-center gap-2">Next <ChevronRight size={16} /></button>
-                        </div>
-                      </div>
-                </div>
+          <div className="bg-zinc-950 border border-zinc-800 rounded-[2.5rem] shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-200 ring-1 ring-white/10">
+            <div className="bg-zinc-900/50 px-8 py-6 border-b border-zinc-800 flex justify-between items-center shrink-0">
+              <div className="flex items-center gap-6">
+                <div className="w-12 h-12 bg-zinc-950 border border-zinc-800 rounded-2xl flex items-center justify-center text-zinc-100 font-mono font-bold text-xl shadow-inner">{viewingQuestion.questionNumber}</div>
+                <div><h3 className="font-bold text-zinc-100 text-lg uppercase tracking-widest">{viewingQuestion.subject}</h3><span className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">{viewingQuestion.type} • Detailed Review</span></div>
+              </div>
+              <button onClick={() => setViewingQuestionId(null)} className="text-zinc-500 hover:text-zinc-100 p-3 hover:bg-zinc-800 rounded-2xl transition-all"><X size={24} /></button>
             </div>
+            <div className="flex-1 overflow-y-auto p-8 flex flex-col items-center gap-8">
+              <div className="bg-white rounded-[2rem] p-4 border border-zinc-800 shadow-2xl max-w-full"><img src={(viewingQuestion as any).imageUrl} className="max-w-full h-auto max-h-[40vh] object-contain rounded-xl" alt="Q-Image" /></div>
+              <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-emerald-500/5 border border-emerald-500/20 p-8 rounded-[2rem] space-y-4">
+                  <div className="flex items-center gap-2 text-emerald-500"><CheckCircle2 size={16} strokeWidth={3} /><span className="text-[10px] font-bold uppercase tracking-widest">Correct Answer</span></div>
+                  <div className="text-4xl font-mono font-bold text-emerald-400">{viewingQuestion.correctOption}</div>
+                </div>
+                <div className={`p-8 rounded-[2rem] space-y-4 border ${viewingQuestion.status === 'correct' ? 'bg-emerald-500/5 border-emerald-500/20' : viewingQuestion.status === 'incorrect' ? 'bg-red-500/5 border-red-500/20' : 'bg-zinc-900 border-zinc-800'}`}>
+                  <div className="flex items-center gap-2"><span className={`text-[10px] font-bold uppercase tracking-widest ${viewingQuestion.status === 'correct' ? 'text-emerald-500' : 'text-red-400'}`}>Your Response</span></div>
+                  <div className={`text-4xl font-mono font-bold ${viewingQuestion.status === 'correct' ? 'text-emerald-400' : 'text-red-400'}`}>{viewingQuestion.userAnswer || "NO INPUT"}</div>
+                </div>
+              </div>
+
+              {viewingQuestion.status === 'incorrect' && (
+                <div className="w-full max-w-4xl bg-zinc-900/50 border border-zinc-800 p-6 rounded-[2rem]">
+                  <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2"><Brain size={14} /> Behavioral Profiling</h4>
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                    {MISTAKE_OPTIONS.map(opt => (
+                      <button key={opt} onClick={() => toggleMistake(viewingQuestion.id, opt)} className={`px-2 py-3 rounded-xl border text-[9px] font-bold uppercase transition-all ${mistakes[viewingQuestion.id] === opt ? 'bg-zinc-100 text-black border-zinc-100' : 'bg-zinc-950 border-zinc-800 text-zinc-600 hover:border-zinc-700'}`}>{opt}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="w-full max-w-4xl flex items-center justify-between pb-12">
+                <div className="flex gap-4">
+                  <div className="bg-zinc-900 px-6 py-3 rounded-2xl border border-zinc-800 shadow-sm"><span className="text-[9px] font-bold text-zinc-500 block uppercase mb-1">Time spent</span><span className="text-zinc-200 font-mono font-bold text-sm">{formatTime(viewingQuestion.time)}</span></div>
+                  <div className="bg-zinc-900 px-6 py-3 rounded-2xl border border-zinc-800 shadow-sm"><span className={`text-[9px] font-bold ${viewingQuestion.marks > 0 ? 'text-emerald-400' : viewingQuestion.marks < 0 ? 'text-red-400' : 'text-zinc-400'} block uppercase mb-1`}>Marks</span><span className={`font-mono font-bold text-sm ${viewingQuestion.marks > 0 ? 'text-emerald-400' : viewingQuestion.marks < 0 ? 'text-red-400' : 'text-zinc-400'}`}>{viewingQuestion.marks > 0 ? '+' : ''}{viewingQuestion.marks.toFixed(1)}</span></div>
+                </div>
+                <div className="flex gap-3">
+                  <button onClick={() => { const idx = results.findIndex(r => r.id === viewingQuestionId); if (idx > 0) setViewingQuestionId(results[idx - 1].id); }} disabled={results.findIndex(r => r.id === viewingQuestionId) <= 0} className="bg-zinc-900 hover:bg-zinc-800 text-zinc-100 px-6 py-3 rounded-2xl border border-zinc-800 text-[10px] font-bold transition-all uppercase tracking-widest disabled:opacity-30 flex items-center gap-2"><ChevronLeft size={16} /> Prev</button>
+                  <button onClick={() => { const idx = results.findIndex(r => r.id === viewingQuestionId); if (idx < results.length - 1) setViewingQuestionId(results[idx + 1].id); }} disabled={results.findIndex(r => r.id === viewingQuestionId) >= results.length - 1} className="bg-zinc-100 hover:bg-white text-black px-6 py-3 rounded-2xl font-bold text-[10px] transition-all uppercase tracking-widest shadow-lg flex items-center gap-2">Next <ChevronRight size={16} /></button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
