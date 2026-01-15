@@ -19,6 +19,7 @@ import { HistoryInterface } from './components/HistoryInterface';
 import { TestSeriesInterface } from './components/TestSeriesInterface';
 import { ProgressInterface } from './components/ProgressInterface';
 import { TestAnalysis } from './components/taker/TestAnalysis';
+import { Sidebar } from './components/Sidebar';
 import { NeuralAuditInterface } from './components/NeuralAuditInterface';
 import { CloudService, UserProfile } from './utils/cloud';
 import { AppMode, WorkspaceState } from './types';
@@ -67,40 +68,56 @@ const App: React.FC = () => {
     switch (mode) {
       case 'dashboard':
         return (
-          <main className="flex-1 overflow-y-auto relative flex flex-col items-center justify-center p-8">
-            <div className="w-full max-w-[98%] space-y-12">
-              <div className="space-y-4">
-                <h1 className="text-5xl font-bold tracking-tighter uppercase font-mono">
-                  {userProfile ? `Welcome, ${userProfile.fullName.split(' ')[0]}` : 'Command Center'}
+          <div className="p-8 w-full max-w-[1920px] mx-auto space-y-8 animate-in fade-in duration-500">
+            {/* Hero Section */}
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-zinc-900/50 p-10 min-h-[300px] flex flex-col justify-center">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_100%_0%,#27272a_0%,transparent_50%)] opacity-50" />
+              <div className="relative z-10 space-y-4 max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100/10 border border-white/5 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  System Operational
+                </div>
+                <h1 className="text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-500">
+                  WELCOME BACK, <br />
+                  <span className="text-white">{userProfile ? userProfile.fullName.split(' ')[0] : 'COMMANDER'}</span>.
                 </h1>
-                <p className="text-zinc-500 font-mono text-sm uppercase tracking-widest">
-                  {userProfile ? `Targeting: ${userProfile.targetExam}` : 'Operational Status: Ready'}
+                <p className="text-lg text-zinc-400 max-w-lg leading-relaxed">
+                  Your neural training hub is active. You have <span className="text-white font-bold">3 pending modules</span> in your queue today.
                 </p>
+                <div className="pt-4 flex gap-4">
+                  <button
+                    onClick={() => setMode('test-series')}
+                    className="px-8 py-4 bg-zinc-100 hover:bg-white text-black text-sm font-bold rounded-2xl transition-all shadow-lg shadow-white/5 uppercase tracking-widest active:scale-95 flex items-center gap-2"
+                  >
+                    <Play size={18} fill="currentColor" />
+                    Resume Training
+                  </button>
+                  <button className="px-8 py-4 bg-zinc-900/50 hover:bg-zinc-800 text-white text-sm font-bold rounded-2xl border border-white/10 transition-all uppercase tracking-widest flex items-center gap-2">
+                    Full Report
+                  </button>
+                </div>
               </div>
+            </div>
 
-              {!userProfile ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="p-8 bg-zinc-900 border border-zinc-800 rounded-3xl space-y-4 group hover:border-zinc-700 transition-all">
-                    <div className="w-12 h-12 bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-400 group-hover:text-zinc-100 transition-colors">
-                      <UserIcon size={24} />
-                    </div>
-                    <h3 className="text-xl font-bold uppercase tracking-tight">Identity Required</h3>
-                    <p className="text-zinc-500 text-sm leading-relaxed">Sign in to sync your performance intelligence across devices and unlock global rankings.</p>
-                    <button onClick={() => setMode('auth')} className="px-6 py-2 bg-zinc-100 hover:bg-white text-black font-bold rounded-xl text-xs uppercase tracking-widest transition-all">Authenticate</button>
+            {/* Stats Grid - Placeholder for Bento */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { label: 'Global Rank', value: '#42', sub: 'Top 5%', color: 'from-amber-500/20 to-amber-900/0', border: 'border-amber-500/20', text: 'text-amber-500' },
+                { label: 'Accuracy', value: '87.5%', sub: '+2.4% this week', color: 'from-emerald-500/20 to-emerald-900/0', border: 'border-emerald-500/20', text: 'text-emerald-500' },
+                { label: 'Time Spent', value: '12h 40m', sub: 'Session Active', color: 'from-blue-500/20 to-blue-900/0', border: 'border-blue-500/20', text: 'text-blue-500' },
+                { label: 'Modules', value: '14/20', sub: 'On Track', color: 'from-purple-500/20 to-purple-900/0', border: 'border-purple-500/20', text: 'text-purple-500' }
+              ].map((stat, i) => (
+                <div key={i} className={`p-6 rounded-3xl bg-zinc-900/40 border ${stat.border} relative overflow-hidden group hover:bg-zinc-900/60 transition-colors`}>
+                  <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                  <div className="relative z-10">
+                    <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">{stat.label}</h3>
+                    <div className={`text-3xl font-mono font-bold ${stat.text}`}>{stat.value}</div>
+                    <div className="text-[10px] text-zinc-600 font-bold mt-2 uppercase">{stat.sub}</div>
                   </div>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <DashboardCard icon={<Box size={20} />} label="Active Series" value="04" />
-                  <DashboardCard icon={<TrendingUp size={20} />} label="Global Rank" value="#--" />
-                  <DashboardCard icon={<Sparkles size={20} />} label="AI Audit" value="Ready" />
-                </div>
-              )}
-
-              {/* Decorative Mesh background element */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-zinc-800/5 rounded-full blur-[100px] pointer-events-none -z-10" />
+              ))}
             </div>
-          </main>
+          </div>
         );
       case 'workspace':
         return activeWorkspace ? <Workspace state={activeWorkspace} onExit={() => setMode('dashboard')} /> : null;
@@ -163,28 +180,19 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-[#e4e4e7] font-sans flex overflow-hidden">
-      {/* Background Mesh - Constant across canvas */}
-      <div className="fixed inset-0 bg-[radial-gradient(#1f1f23_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none opacity-40" />
-
-      {/* Sidebar - Matching AI Studio Style, listing specialized options */}
-      <aside className={`${isSidebarExpanded ? 'w-64' : 'w-16'} border-r border-zinc-900 bg-[#09090b] flex flex-col transition-all duration-300 z-50 shrink-0`}>
-        <div className="h-16 flex items-center px-4 justify-between border-b border-zinc-900/50">
-          {isSidebarExpanded && (
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => setMode('dashboard')}>
               <div className="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center text-black shadow-lg">
                 <Box size={18} strokeWidth={2.5} />
               </div>
               <span className="font-bold tracking-tight text-lg">Q-app</span>
-            </div>
+            </div >
           )}
-          <button
-            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-            className="p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 transition-colors"
-          >
-            <Menu size={20} />
-          </button>
-        </div>
+<button
+  onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+  className="p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 transition-colors"
+>
+  <Menu size={20} />
+</button>
+        </div >
 
         <div className="flex-1 overflow-y-auto py-6 px-2 space-y-8">
           {/* Navigation Group - available options as requested */}
@@ -266,18 +274,18 @@ const App: React.FC = () => {
             )}
           </div>
         </div>
-      </aside>
+      </aside >
 
-      {/* Primary content area */}
-      {renderMainContent()}
+  {/* Primary content area */ }
+{ renderMainContent() }
 
-      {/* Global Footer Meta - Stays persistent */}
-      <div className="fixed bottom-6 right-8 flex items-center gap-4 text-[10px] font-mono text-zinc-700 uppercase tracking-widest pointer-events-none z-0">
-        <span>v2.6.0 STUDIO_ENGINE</span>
-        <div className="w-1 h-1 bg-zinc-800 rounded-full" />
-        <span>SY_SYNC: {userProfile ? 'ACTIVE_UPLINK' : 'LOCAL_ONLY'}</span>
-      </div>
-    </div>
+{/* Global Footer Meta - Stays persistent */ }
+<div className="fixed bottom-6 right-8 flex items-center gap-4 text-[10px] font-mono text-zinc-700 uppercase tracking-widest pointer-events-none z-0">
+  <span>v2.6.0 STUDIO_ENGINE</span>
+  <div className="w-1 h-1 bg-zinc-800 rounded-full" />
+  <span>SY_SYNC: {userProfile ? 'ACTIVE_UPLINK' : 'LOCAL_ONLY'}</span>
+</div>
+    </div >
   );
 };
 
