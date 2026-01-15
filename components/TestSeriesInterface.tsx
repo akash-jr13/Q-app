@@ -84,7 +84,7 @@ export const TestSeriesInterface: React.FC<TestSeriesInterfaceProps> = ({ onExit
                 </div>
             </div>
 
-            <div className="flex-1 p-4 md:p-8 relative z-10 max-w-7xl mx-auto w-full flex flex-col">
+            <div className="flex-1 p-4 md:p-8 relative z-10 w-full max-w-[98%] mx-auto flex flex-col">
                 {isLoading ? (
                     <div className="flex-1 flex flex-col items-center justify-center gap-4">
                         <Loader2 size={32} className="animate-spin text-zinc-500" />

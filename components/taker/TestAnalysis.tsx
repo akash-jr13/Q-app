@@ -154,7 +154,7 @@ export const TestAnalysis: React.FC<TestAnalysisProps> = ({ testName, questions,
                 </div>
             </header>
 
-            <main className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 relative z-10 animate-in fade-in duration-500 pb-20">
+            <main className="w-full max-w-[98%] mx-auto p-4 md:p-8 space-y-8 relative z-10 animate-in fade-in duration-500 pb-20">
                 {activeTab === 'snapshot' && <SnapshotTab stats={stats} history={history} />}
                 {activeTab === 'dashboard' && <DashboardTab stats={stats} results={results} />}
                 {activeTab === 'attempts' && <AttemptsTab results={results} subjects={subjects} />}

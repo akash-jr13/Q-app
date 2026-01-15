@@ -179,7 +179,7 @@ export const SeriesManager: React.FC<SeriesManagerProps> = ({ onExit }) => {
         className="hidden"
       />
 
-      <div className="max-w-7xl mx-auto space-y-6 md:space-y-8 relative z-10">
+      <div className="w-full max-w-[98%] mx-auto space-y-6 md:space-y-8 relative z-10">
         <header className="flex flex-col sm:flex-row justify-between items-center bg-zinc-900 p-4 md:p-6 rounded-2xl border border-zinc-800 shadow-xl gap-4">
           <div className="flex items-center gap-4 w-full sm:w-auto">
             <button

@@ -68,7 +68,7 @@ const App: React.FC = () => {
       case 'dashboard':
         return (
           <main className="flex-1 overflow-y-auto relative flex flex-col items-center justify-center p-8">
-            <div className="w-full max-w-7xl space-y-12">
+            <div className="w-full max-w-[98%] space-y-12">
               <div className="space-y-4">
                 <h1 className="text-5xl font-bold tracking-tighter uppercase font-mono">
                   {userProfile ? `Welcome, ${userProfile.fullName.split(' ')[0]}` : 'Command Center'}
@@ -128,7 +128,7 @@ const App: React.FC = () => {
         // Placeholder for settings if needed, for now just show profile info or logout
         return (
           <main className="flex-1 overflow-y-auto p-12 flex flex-col items-center">
-            <div className="w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-3xl p-8 space-y-6">
+            <div className="w-full max-w-4xl bg-zinc-900 border border-zinc-800 rounded-3xl p-8 space-y-6">
               <h2 className="text-2xl font-bold uppercase tracking-widest font-mono">Profile Settings</h2>
               <div className="space-y-4">
                 <div className="flex justify-between items-center p-4 bg-zinc-950 rounded-xl border border-zinc-800">

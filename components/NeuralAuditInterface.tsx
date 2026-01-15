@@ -126,7 +126,7 @@ export const NeuralAuditInterface: React.FC<NeuralAuditInterfaceProps> = ({ onEx
             </div>
          </aside>
 
-         <main className="ml-64 p-10 max-w-7xl mx-auto space-y-12">
+         <main className="ml-64 p-10 w-full max-w-[98%] mx-auto space-y-12">
             {/* HEADER CONTENT */}
             <div className="flex justify-between items-end border-b border-zinc-900 pb-10">
                <div className="space-y-3">

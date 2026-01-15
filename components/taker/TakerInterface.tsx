@@ -426,7 +426,7 @@ export const TakerInterface: React.FC<TakerInterfaceProps> = ({ onExit, initialP
               </div>
             </div>
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 flex flex-col items-center">
-              <div className="w-full max-w-5xl space-y-6 sm:space-y-8">
+              <div className="w-full max-w-[98%] space-y-6 sm:space-y-8">
                 <div className="bg-white rounded-lg border border-zinc-800 overflow-hidden min-h-[200px] shadow-lg relative">{currentQuestion.imageUrl ? <img src={currentQuestion.imageUrl} className="w-full h-auto object-contain" alt="Question" /> : <div className="flex flex-col items-center justify-center p-12 gap-2 text-zinc-400"><AlertCircle size={32} /></div>}</div>
                 <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-xl">
                   <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-6 flex items-center gap-2"><span className="w-1 h-4 bg-zinc-700 rounded-full"></span>SELECT RESPONSE</h3>

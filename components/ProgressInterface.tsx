@@ -102,7 +102,7 @@ export const ProgressInterface: React.FC<ProgressInterfaceProps> = ({ onExit, on
     <div className="min-h-screen bg-zinc-950 text-zinc-200 font-sans p-6 md:p-10 relative overflow-x-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(#1f1f23_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none" />
 
-      <header className="max-w-7xl mx-auto flex justify-between items-center mb-12 z-10 relative">
+      <header className="w-full max-w-[98%] mx-auto flex justify-between items-center mb-12 z-10 relative">
         <div className="flex items-center gap-4">
           <button onClick={onExit} className="p-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100 transition-all shadow-lg active:scale-95">
             <Home size={18} />
@@ -123,7 +123,7 @@ export const ProgressInterface: React.FC<ProgressInterfaceProps> = ({ onExit, on
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto space-y-8 z-10 relative animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <main className="w-full max-w-[98%] mx-auto space-y-8 z-10 relative animate-in fade-in slide-in-from-bottom-4 duration-700">
 
         {/* KPI Row - Refined dark theme cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
