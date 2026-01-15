@@ -22,11 +22,8 @@ export interface GlobalTestStats {
 // Safe environment variable accessor
 const getEnv = (key: string): string => {
     try {
-        // @ts-ignore
-        const env = (typeof process !== 'undefined' && process.env) ? process.env : {};
-        // @ts-ignore
-        const metaEnv = (typeof import.meta !== 'undefined' && import.meta.env) ? import.meta.env : {};
-        return (env[key] || metaEnv[key] || "").toString();
+        // Vite uses import.meta.env
+        return (import.meta.env[key] || "").toString();
     } catch (e) {
         return "";
     }
@@ -42,7 +39,7 @@ const SUPABASE_ANON_KEY = getEnv('VITE_SUPABASE_ANON_KEY');
 async function fetchWithTimeout(resource: string, options: any = {}, timeout = 6000) {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
-    
+
     try {
         const response = await fetch(resource, {
             ...options,
@@ -62,8 +59,8 @@ async function fetchWithTimeout(resource: string, options: any = {}, timeout = 6
 export const CloudService = {
     isConfigured(): boolean {
         return (
-            !!SUPABASE_URL && 
-            !!SUPABASE_ANON_KEY && 
+            !!SUPABASE_URL &&
+            !!SUPABASE_ANON_KEY &&
             !SUPABASE_URL.includes("your-project-id") &&
             SUPABASE_URL.startsWith("http")
         );
@@ -81,17 +78,17 @@ export const CloudService = {
     /**
      * AUTH: Sign Up
      */
-    async signUp(email: string, pass: string, fullName: string, targetExam: string): Promise<{user?: any, error?: string}> {
+    async signUp(email: string, pass: string, fullName: string, targetExam: string): Promise<{ user?: any, error?: string }> {
         if (!this.isConfigured()) return { error: "Cloud Uplink is not configured." };
-        
+
         try {
             const res = await fetchWithTimeout(`${SUPABASE_URL}/auth/v1/signup`, {
                 method: 'POST',
                 headers: this.getHeaders(),
-                body: JSON.stringify({ 
-                    email, 
-                    password: pass, 
-                    data: { full_name: fullName, target_exam: targetExam } 
+                body: JSON.stringify({
+                    email,
+                    password: pass,
+                    data: { full_name: fullName, target_exam: targetExam }
                 })
             });
             const data = await res.json();
@@ -107,7 +104,7 @@ export const CloudService = {
     /**
      * AUTH: Login
      */
-    async login(email: string, pass: string): Promise<{session?: any, error?: string}> {
+    async login(email: string, pass: string): Promise<{ session?: any, error?: string }> {
         if (!this.isConfigured()) return { error: "Cloud Uplink is not configured." };
 
         try {
@@ -184,7 +181,7 @@ export const CloudService = {
             if (!response.ok) return null;
             return await response.json();
         } catch (e) {
-            return null; 
+            return null;
         }
     }
 };
