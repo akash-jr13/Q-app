@@ -183,5 +183,53 @@ export const CloudService = {
         } catch (e) {
             return null;
         }
-    }
+    },
+
+    /**
+     * DATABASE: Get Attempts for User
+     */
+    async getAttempts(userId: string): Promise<any[]> {
+        if (!this.isConfigured() || !userId) return [];
+        try {
+            const response = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/test_attempts?user_id=eq.${userId}&order=timestamp.desc`, {
+                headers: this.getHeaders()
+            });
+            if (!response.ok) return [];
+            return await response.json();
+        } catch (e) {
+            return [];
+        }
+    },
+
+    /**
+     * AUTH: Update Profile
+     */
+    async updateProfile(token: string, data: { fullName?: string, targetExam?: string }): Promise<{ profile?: UserProfile, error?: string }> {
+        if (!this.isConfigured() || !token) return { error: "Not configured or missing token." };
+
+        const updateData: any = {};
+        if (data.fullName) updateData.full_name = data.fullName;
+        if (data.targetExam) updateData.target_exam = data.targetExam;
+
+        try {
+            const res = await fetchWithTimeout(`${SUPABASE_URL}/auth/v1/user`, {
+                method: 'PUT',
+                headers: this.getHeaders(token),
+                body: JSON.stringify({ data: updateData })
+            });
+            const result = await res.json();
+            if (!res.ok) return { error: result.msg || "Update failed." };
+
+            return {
+                profile: {
+                    id: result.id,
+                    email: result.email,
+                    fullName: result.user_metadata?.full_name || "Agent",
+                    targetExam: result.user_metadata?.target_exam || "General"
+                }
+            };
+        } catch (e: any) {
+            return { error: e.message };
+        }
+    },
 };

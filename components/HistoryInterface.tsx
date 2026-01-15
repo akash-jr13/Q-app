@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { Home, Trash2, Clock, Calendar, Trophy, Percent, Activity, ChevronRight, BarChart2, Loader2 } from 'lucide-react';
+import { Home, Trash2, Clock, Calendar, Trophy, Percent, Activity, ChevronRight, BarChart2, Loader2, Cloud } from 'lucide-react';
 import { TestHistoryItem } from '../types';
 import { dbStore } from '../utils/db';
+import { CloudService } from '../utils/cloud';
 
 interface HistoryInterfaceProps {
   onExit: () => void;
@@ -20,21 +21,57 @@ export const HistoryInterface: React.FC<HistoryInterfaceProps> = ({ onExit, onAn
   const loadHistory = async () => {
     setIsLoading(true);
     try {
+      // 1. Load Local History
       const stored = await dbStore.getAll<TestHistoryItem>('history');
-      if (stored && stored.length > 0) {
-        setHistory(stored.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
-      } else {
-        // Migration from localStorage
-        const oldStored = localStorage.getItem('qt_history');
-        if (oldStored) {
-          const list = JSON.parse(oldStored);
-          setHistory(list);
-          for (const item of list) {
-            await dbStore.set('history', item);
-          }
-          localStorage.removeItem('qt_history');
+      let combined: TestHistoryItem[] = stored || [];
+
+      // 2. Sync Migration (Legacy)
+      const oldStored = localStorage.getItem('qt_history');
+      if (oldStored) {
+        const list = JSON.parse(oldStored);
+        for (const item of list) {
+          await dbStore.set('history', item);
+          if (!combined.find(c => c.id === item.id)) combined.push(item);
+        }
+        localStorage.removeItem('qt_history');
+      }
+
+      // 3. Load Cloud History if logged in
+      const token = localStorage.getItem('supabase_token');
+      if (token && CloudService.isConfigured()) {
+        const profile = await CloudService.getProfile(token);
+        if (profile) {
+          const cloudAttempts = await CloudService.getAttempts(profile.id);
+
+          // Map cloud attempts to history items (Lite version)
+          const cloudHistory: TestHistoryItem[] = cloudAttempts.map((ca: any) => ({
+            id: `cloud-${ca.id}`,
+            testName: ca.test_name,
+            timestamp: ca.timestamp,
+            score: ca.score,
+            totalMarks: 100, // Partial data in Lite mode
+            percentage: ca.score.toString(),
+            accuracy: ca.accuracy,
+            timeTaken: 0,
+            totalQuestions: 0,
+            attempted: 0,
+            correct: 0,
+            incorrect: 0,
+            isCloudOnly: true
+          }));
+
+          // Avoid duplicates by test name and timestamp (approximate)
+          cloudHistory.forEach(ch => {
+            const exists = combined.some(l =>
+              l.testName === ch.testName &&
+              Math.abs(new Date(l.timestamp).getTime() - new Date(ch.timestamp).getTime()) < 5000
+            );
+            if (!exists) combined.push(ch);
+          });
         }
       }
+
+      setHistory(combined.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
     } catch (e) {
       console.error("Failed to load history", e);
     } finally {
@@ -150,6 +187,11 @@ export const HistoryInterface: React.FC<HistoryInterfaceProps> = ({ onExit, onAn
                       {item.storedData && (
                         <span className="flex items-center gap-1.5 text-emerald-500/80 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
                           <BarChart2 size={10} /> Analysis Available
+                        </span>
+                      )}
+                      {(item as any).isCloudOnly && (
+                        <span className="flex items-center gap-1.5 text-blue-500/80 bg-blue-500/5 px-2 py-0.5 rounded border border-blue-500/10">
+                          <Cloud size={10} /> Cloud Sync
                         </span>
                       )}
                     </div>

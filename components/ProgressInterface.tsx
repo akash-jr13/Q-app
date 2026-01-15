@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Home, TrendingUp, Target, Activity, Calendar, Award, ChevronUp, ChevronRight, BrainCircuit, BarChart2, Zap, Flame, Clock, ShieldCheck, Loader2 } from 'lucide-react';
+import { Home, TrendingUp, Activity, Calendar, Award, ChevronUp, ChevronRight, BrainCircuit, BarChart2, Zap, Flame, Clock, ShieldCheck, Loader2 } from 'lucide-react';
 import { TestHistoryItem } from '../types';
 import { dbStore } from '../utils/db';
+import { CloudService } from '../utils/cloud';
 
 interface ProgressInterfaceProps {
   onExit: () => void;
@@ -17,9 +18,42 @@ export const ProgressInterface: React.FC<ProgressInterfaceProps> = ({ onExit, on
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const data = await dbStore.getAll<TestHistoryItem>('history');
-        // Sort by timestamp to get chronology correct for trend
-        setHistory(data.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()));
+        // 1. Load Local
+        const localData = await dbStore.getAll<TestHistoryItem>('history');
+        let combined: TestHistoryItem[] = localData || [];
+
+        // 2. Load Cloud if logged in
+        const token = localStorage.getItem('supabase_token');
+        if (token && CloudService.isConfigured()) {
+          const profile = await CloudService.getProfile(token);
+          if (profile) {
+            const cloudAttempts = await CloudService.getAttempts(profile.id);
+            cloudAttempts.forEach((ca: any) => {
+              const exists = combined.some(l =>
+                l.testName === ca.test_name &&
+                Math.abs(new Date(l.timestamp).getTime() - new Date(ca.timestamp).getTime()) < 5000
+              );
+              if (!exists) {
+                combined.push({
+                  id: `cloud-${ca.id}`,
+                  testName: ca.test_name,
+                  timestamp: ca.timestamp,
+                  score: ca.score,
+                  totalMarks: 100,
+                  percentage: ca.score.toString(),
+                  accuracy: ca.accuracy,
+                  timeTaken: 0,
+                  totalQuestions: 0,
+                  attempted: 0,
+                  correct: 0,
+                  incorrect: 0
+                });
+              }
+            });
+          }
+        }
+
+        setHistory(combined.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()));
       } catch (e) {
         console.error("Failed to load history data", e);
       } finally {
@@ -31,12 +65,12 @@ export const ProgressInterface: React.FC<ProgressInterfaceProps> = ({ onExit, on
 
   const stats = useMemo(() => {
     if (history.length === 0) return null;
-    
+
     const scores = history.map(h => h.score);
     const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
     const bestScore = Math.max(...scores);
     const avgAccuracy = history.reduce((a, b) => a + b.accuracy, 0) / history.length;
-    
+
     // Velocity calculation (simple trend)
     const latestScore = scores[scores.length - 1];
     const prevScore = scores[scores.length - 2] || latestScore;
@@ -90,7 +124,7 @@ export const ProgressInterface: React.FC<ProgressInterfaceProps> = ({ onExit, on
       </header>
 
       <main className="max-w-6xl mx-auto space-y-8 z-10 relative animate-in fade-in slide-in-from-bottom-4 duration-700">
-        
+
         {/* KPI Row - Refined dark theme cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-zinc-900/40 border border-zinc-800 p-6 rounded-3xl space-y-4 shadow-xl backdrop-blur-sm">
@@ -100,7 +134,7 @@ export const ProgressInterface: React.FC<ProgressInterfaceProps> = ({ onExit, on
               <div className="text-[10px] text-zinc-600 font-bold uppercase mb-2">Target: 95%</div>
             </div>
             <div className="h-1.5 w-full bg-zinc-950 rounded-full border border-zinc-800 overflow-hidden">
-               <div className="h-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" style={{ width: `${stats?.avgAccuracy || 0}%` }} />
+              <div className="h-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" style={{ width: `${stats?.avgAccuracy || 0}%` }} />
             </div>
           </div>
 
@@ -133,7 +167,7 @@ export const ProgressInterface: React.FC<ProgressInterfaceProps> = ({ onExit, on
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Chart Container */}
           <div className="lg:col-span-2 bg-zinc-900/40 border border-zinc-800 rounded-[2.5rem] p-8 flex flex-col gap-6 shadow-2xl backdrop-blur-sm">
             <div className="flex justify-between items-center">
@@ -149,35 +183,35 @@ export const ProgressInterface: React.FC<ProgressInterfaceProps> = ({ onExit, on
             </div>
 
             <div className="flex-1 min-h-[280px] flex items-end justify-around px-4 pb-2 relative">
-               <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20 py-2">
-                  <div className="w-full h-px bg-zinc-800" />
-                  <div className="w-full h-px bg-zinc-800" />
-                  <div className="w-full h-px bg-zinc-800" />
-                  <div className="w-full h-px bg-zinc-800" />
-               </div>
+              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20 py-2">
+                <div className="w-full h-px bg-zinc-800" />
+                <div className="w-full h-px bg-zinc-800" />
+                <div className="w-full h-px bg-zinc-800" />
+                <div className="w-full h-px bg-zinc-800" />
+              </div>
 
-               {history.length > 0 ? (
-                 history.slice(-10).map((h, i) => (
-                    <div key={h.id} className="group relative flex flex-col items-center gap-3 flex-1 max-w-[60px]">
-                       <div 
-                         className="w-full max-w-[32px] bg-gradient-to-t from-zinc-800 to-zinc-500/50 border-x border-t border-zinc-700/50 hover:from-amber-600 hover:to-amber-400 transition-all rounded-t-lg cursor-help relative group-hover:shadow-[0_0_15px_rgba(251,191,36,0.3)]"
-                         style={{ height: `${Math.max(20, (h.score / (h.totalMarks || 1)) * 240)}px` }}
-                       >
-                          <div className="absolute -top-10 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-zinc-100 bg-zinc-950 px-2 py-1 rounded-lg border border-zinc-800 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 whitespace-nowrap shadow-xl z-20">
-                            {h.score} Pts
-                          </div>
-                       </div>
-                       <span className="text-[8px] font-mono text-zinc-600 uppercase tracking-tighter whitespace-nowrap overflow-hidden text-ellipsis w-full text-center">
-                         {new Date(h.timestamp).toLocaleDateString('en-US', { day: '2-digit', month: 'short' })}
-                       </span>
+              {history.length > 0 ? (
+                history.slice(-10).map((h) => (
+                  <div key={h.id} className="group relative flex flex-col items-center gap-3 flex-1 max-w-[60px]">
+                    <div
+                      className="w-full max-w-[32px] bg-gradient-to-t from-zinc-800 to-zinc-500/50 border-x border-t border-zinc-700/50 hover:from-amber-600 hover:to-amber-400 transition-all rounded-t-lg cursor-help relative group-hover:shadow-[0_0_15px_rgba(251,191,36,0.3)]"
+                      style={{ height: `${Math.max(20, (h.score / (h.totalMarks || 1)) * 240)}px` }}
+                    >
+                      <div className="absolute -top-10 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-zinc-100 bg-zinc-950 px-2 py-1 rounded-lg border border-zinc-800 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 whitespace-nowrap shadow-xl z-20">
+                        {h.score} Pts
+                      </div>
                     </div>
-                 ))
-               ) : (
-                 <div className="flex-1 flex flex-col items-center justify-center text-zinc-700 gap-4">
-                    <Activity size={48} className="opacity-20" />
-                    <p className="text-xs font-mono uppercase tracking-[0.2em]">Inadequate Neural Samples</p>
-                 </div>
-               )}
+                    <span className="text-[8px] font-mono text-zinc-600 uppercase tracking-tighter whitespace-nowrap overflow-hidden text-ellipsis w-full text-center">
+                      {new Date(h.timestamp).toLocaleDateString('en-US', { day: '2-digit', month: 'short' })}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center text-zinc-700 gap-4">
+                  <Activity size={48} className="opacity-20" />
+                  <p className="text-xs font-mono uppercase tracking-[0.2em]">Inadequate Neural Samples</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -191,67 +225,67 @@ export const ProgressInterface: React.FC<ProgressInterfaceProps> = ({ onExit, on
             </div>
 
             <div className="space-y-8">
-               <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                      <Zap size={10} className="text-blue-500" fill="currentColor" /> Physics Core
-                    </span>
-                    <span className="text-xs font-mono font-bold text-zinc-100">72%</span>
-                  </div>
-                  <div className="h-1.5 bg-zinc-950 rounded-full border border-zinc-900 overflow-hidden">
-                    <div className="h-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" style={{ width: '72%' }} />
-                  </div>
-               </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                    <Zap size={10} className="text-blue-500" fill="currentColor" /> Physics Core
+                  </span>
+                  <span className="text-xs font-mono font-bold text-zinc-100">72%</span>
+                </div>
+                <div className="h-1.5 bg-zinc-950 rounded-full border border-zinc-900 overflow-hidden">
+                  <div className="h-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" style={{ width: '72%' }} />
+                </div>
+              </div>
 
-               <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                      <Zap size={10} className="text-emerald-500" fill="currentColor" /> Chemistry Core
-                    </span>
-                    <span className="text-xs font-mono font-bold text-zinc-100">88%</span>
-                  </div>
-                  <div className="h-1.5 bg-zinc-950 rounded-full border border-zinc-900 overflow-hidden">
-                    <div className="h-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" style={{ width: '88%' }} />
-                  </div>
-               </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                    <Zap size={10} className="text-emerald-500" fill="currentColor" /> Chemistry Core
+                  </span>
+                  <span className="text-xs font-mono font-bold text-zinc-100">88%</span>
+                </div>
+                <div className="h-1.5 bg-zinc-950 rounded-full border border-zinc-900 overflow-hidden">
+                  <div className="h-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" style={{ width: '88%' }} />
+                </div>
+              </div>
 
-               <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                      <Zap size={10} className="text-purple-500" fill="currentColor" /> Mathematics Core
-                    </span>
-                    <span className="text-xs font-mono font-bold text-zinc-100">64%</span>
-                  </div>
-                  <div className="h-1.5 bg-zinc-950 rounded-full border border-zinc-900 overflow-hidden">
-                    <div className="h-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]" style={{ width: '64%' }} />
-                  </div>
-               </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                    <Zap size={10} className="text-purple-500" fill="currentColor" /> Mathematics Core
+                  </span>
+                  <span className="text-xs font-mono font-bold text-zinc-100">64%</span>
+                </div>
+                <div className="h-1.5 bg-zinc-950 rounded-full border border-zinc-900 overflow-hidden">
+                  <div className="h-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]" style={{ width: '64%' }} />
+                </div>
+              </div>
 
-               <div className="pt-4 mt-4 border-t border-zinc-800/50">
-                  <div className="flex items-center gap-3 p-4 bg-zinc-950/50 rounded-2xl border border-zinc-800">
-                    <ShieldCheck size={20} className="text-emerald-500 shrink-0" />
-                    <div>
-                      <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest block">Learning Equilibrium</span>
-                      <p className="text-[10px] text-zinc-400 leading-relaxed">Chemistry is driving your current rank. Stabilize Mathematics to break the next bracket.</p>
-                    </div>
+              <div className="pt-4 mt-4 border-t border-zinc-800/50">
+                <div className="flex items-center gap-3 p-4 bg-zinc-950/50 rounded-2xl border border-zinc-800">
+                  <ShieldCheck size={20} className="text-emerald-500 shrink-0" />
+                  <div>
+                    <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest block">Learning Equilibrium</span>
+                    <p className="text-[10px] text-zinc-400 leading-relaxed">Chemistry is driving your current rank. Stabilize Mathematics to break the next bracket.</p>
                   </div>
-               </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-zinc-900 gap-4">
-           <div className="flex items-center gap-3 text-zinc-600">
-              <Calendar size={14} />
-              <span className="text-[10px] font-mono uppercase tracking-widest">Last Synced: {new Date().toLocaleTimeString()}</span>
-           </div>
-           <button 
-             onClick={onAudit}
-             className="flex items-center gap-2 text-zinc-500 hover:text-zinc-100 transition-colors group px-6 py-3 border border-zinc-800 rounded-2xl hover:border-zinc-500"
-           >
-              <span className="text-[10px] font-bold uppercase tracking-widest">Detailed Neural Audit</span>
-              <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-           </button>
+          <div className="flex items-center gap-3 text-zinc-600">
+            <Calendar size={14} />
+            <span className="text-[10px] font-mono uppercase tracking-widest">Last Synced: {new Date().toLocaleTimeString()}</span>
+          </div>
+          <button
+            onClick={onAudit}
+            className="flex items-center gap-2 text-zinc-500 hover:text-zinc-100 transition-colors group px-6 py-3 border border-zinc-800 rounded-2xl hover:border-zinc-500"
+          >
+            <span className="text-[10px] font-bold uppercase tracking-widest">Detailed Neural Audit</span>
+            <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+          </button>
         </div>
       </main>
     </div>

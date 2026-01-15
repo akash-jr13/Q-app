@@ -1,19 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  LayoutGrid,
-  Settings,
-  User as UserIcon,
-  History,
   Box,
+  History,
+  TrendingUp,
+  Settings,
+  Plus,
   Layers,
   Menu,
-  Play,
-  TrendingUp,
   Sparkles,
-  Search,
-  Command,
-  Plus
+  Play,
+  User as UserIcon
 } from 'lucide-react';
 import { AuthInterface } from './components/AuthInterface';
 import { Workspace } from './components/Workspace';
@@ -70,13 +67,38 @@ const App: React.FC = () => {
     switch (mode) {
       case 'dashboard':
         return (
-          <main className="flex-1 overflow-y-auto relative flex flex-col items-center justify-center">
-            {/* Blank Canvas Area as requested */}
-            <div className="flex flex-col items-center justify-center gap-6 opacity-20 pointer-events-none select-none">
-              <Command size={64} className="text-zinc-500" />
-              <span className="text-xs font-mono font-bold uppercase tracking-[0.5em] text-zinc-500">
-                Q-app Initiated
-              </span>
+          <main className="flex-1 overflow-y-auto relative flex flex-col items-center justify-center p-8">
+            <div className="w-full max-w-4xl space-y-12">
+              <div className="space-y-4">
+                <h1 className="text-5xl font-bold tracking-tighter uppercase font-mono">
+                  {userProfile ? `Welcome, ${userProfile.fullName.split(' ')[0]}` : 'Command Center'}
+                </h1>
+                <p className="text-zinc-500 font-mono text-sm uppercase tracking-widest">
+                  {userProfile ? `Targeting: ${userProfile.targetExam}` : 'Operational Status: Ready'}
+                </p>
+              </div>
+
+              {!userProfile ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="p-8 bg-zinc-900 border border-zinc-800 rounded-3xl space-y-4 group hover:border-zinc-700 transition-all">
+                    <div className="w-12 h-12 bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-400 group-hover:text-zinc-100 transition-colors">
+                      <UserIcon size={24} />
+                    </div>
+                    <h3 className="text-xl font-bold uppercase tracking-tight">Identity Required</h3>
+                    <p className="text-zinc-500 text-sm leading-relaxed">Sign in to sync your performance intelligence across devices and unlock global rankings.</p>
+                    <button onClick={() => setMode('auth')} className="px-6 py-2 bg-zinc-100 hover:bg-white text-black font-bold rounded-xl text-xs uppercase tracking-widest transition-all">Authenticate</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <DashboardCard icon={<Box size={20} />} label="Active Series" value="04" />
+                  <DashboardCard icon={<TrendingUp size={20} />} label="Global Rank" value="#--" />
+                  <DashboardCard icon={<Sparkles size={20} />} label="AI Audit" value="Ready" />
+                </div>
+              )}
+
+              {/* Decorative Mesh background element */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-zinc-800/5 rounded-full blur-[100px] pointer-events-none -z-10" />
             </div>
           </main>
         );
@@ -102,6 +124,39 @@ const App: React.FC = () => {
         />;
       case 'auth':
         return <AuthInterface onAuthSuccess={(p) => { setUserProfile(p); setMode('dashboard'); }} onExit={() => setMode('dashboard')} />;
+      case 'settings':
+        // Placeholder for settings if needed, for now just show profile info or logout
+        return (
+          <main className="flex-1 overflow-y-auto p-12 flex flex-col items-center">
+            <div className="w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-3xl p-8 space-y-6">
+              <h2 className="text-2xl font-bold uppercase tracking-widest font-mono">Profile Settings</h2>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-4 bg-zinc-950 rounded-xl border border-zinc-800">
+                  <span className="text-zinc-500 uppercase text-xs font-bold">Email</span>
+                  <span className="font-mono">{userProfile?.email}</span>
+                </div>
+                <div className="flex justify-between items-center p-4 bg-zinc-950 rounded-xl border border-zinc-800">
+                  <span className="text-zinc-500 uppercase text-xs font-bold">Full Name</span>
+                  <span>{userProfile?.fullName}</span>
+                </div>
+                <div className="flex justify-between items-center p-4 bg-zinc-950 rounded-xl border border-zinc-800">
+                  <span className="text-zinc-500 uppercase text-xs font-bold">Target Exam</span>
+                  <span className="text-emerald-500 font-bold">{userProfile?.targetExam}</span>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  localStorage.removeItem('supabase_token');
+                  setUserProfile(null);
+                  setMode('dashboard');
+                }}
+                className="w-full py-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-2xl font-bold uppercase tracking-widest text-xs transition-all"
+              >
+                Sign Out / Terminate Session
+              </button>
+            </div>
+          </main>
+        );
       default:
         return null;
     }
@@ -225,6 +280,16 @@ const App: React.FC = () => {
     </div>
   );
 };
+
+const DashboardCard = ({ icon, label, value }: { icon: any, label: string, value: string }) => (
+  <div className="p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl space-y-4 hover:bg-zinc-900 transition-all">
+    <div className="text-zinc-500">{icon}</div>
+    <div>
+      <div className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">{label}</div>
+      <div className="text-2xl font-bold font-mono text-zinc-100">{value}</div>
+    </div>
+  </div>
+);
 
 const NavItem = ({ icon, label, onClick, active = false, expanded = true }: { icon: any, label: string, onClick?: () => void, active?: boolean, expanded: boolean }) => (
   <button

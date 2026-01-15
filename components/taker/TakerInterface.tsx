@@ -286,7 +286,15 @@ export const TakerInterface: React.FC<TakerInterfaceProps> = ({ onExit, initialP
     };
 
     // 1. Sync to Cloud (LIVE Percentile calculation)
-    CloudService.submitAttempt(testData.testName, finalScore, accuracy);
+    const token = localStorage.getItem('supabase_token');
+    let userId = undefined;
+    if (token) {
+      try {
+        const profile = await CloudService.getProfile(token);
+        if (profile) userId = profile.id;
+      } catch (e) { }
+    }
+    CloudService.submitAttempt(testData.testName, finalScore, accuracy, userId);
 
     // 2. Sync to Local History
     try { await dbStore.set('history', historyItem); } catch (e) { console.error("Failed to save history", e); }
