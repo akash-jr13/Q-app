@@ -18,6 +18,8 @@ const isAuth0Configured = domain !== "placeholder.us.auth0.com" && clientId !== 
 
 const root = ReactDOM.createRoot(rootElement);
 
+import { BrowserRouter } from 'react-router-dom';
+
 if (isAuth0Configured) {
   root.render(
     <React.StrictMode>
@@ -30,7 +32,9 @@ if (isAuth0Configured) {
         cacheLocation="localstorage"
         useRefreshTokens={true}
       >
-        <App />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </Auth0Provider>
     </React.StrictMode>
   );
@@ -38,7 +42,9 @@ if (isAuth0Configured) {
   // Render without Auth0 if not configured
   root.render(
     <React.StrictMode>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </React.StrictMode>
   );
 }

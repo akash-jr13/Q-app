@@ -9,6 +9,7 @@ export interface UserProfile {
     email: string;
     fullName: string;
     targetExam: string;
+    joinedAt?: string;
 }
 
 export interface GlobalTestStats {
@@ -232,4 +233,370 @@ export const CloudService = {
             return { error: e.message };
         }
     },
+
+    /**
+     * PEER NETWORKING: Join/Update
+     */
+    async joinPeerGroup(token: string, groupId: string, subject: string, status: string): Promise<string | null> {
+        if (!this.isConfigured()) return null;
+
+        try {
+            const profile = await this.getProfile(token);
+            if (!profile) return null;
+
+            const response = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/study_peers`, {
+                method: 'POST',
+                headers: {
+                    ...this.getHeaders(token),
+                    'Prefer': 'return=representation'
+                },
+                body: JSON.stringify({
+                    user_id: profile.id,
+                    group_id: groupId,
+                    display_name: profile.fullName,
+                    subject: subject,
+                    status: status,
+                    last_ping: new Date().toISOString()
+                })
+            });
+
+            if (!response.ok) return null;
+            const data = await response.json();
+            return data[0]?.id;
+        } catch (e) {
+            return null;
+        }
+    },
+
+    /**
+     * PEER NETWORKING: Heartbeat
+     */
+    async sendHeartbeat(token: string, peerId: string, status: string, timer: number, subject: string): Promise<boolean> {
+        if (!this.isConfigured()) return false;
+        try {
+            const response = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/study_peers?id=eq.${peerId}`, {
+                method: 'PATCH',
+                headers: this.getHeaders(token),
+                body: JSON.stringify({
+                    status,
+                    timer_val: timer,
+                    subject,
+                    last_ping: new Date().toISOString()
+                })
+            });
+            return response.ok;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    /**
+     * PEER NETWORKING: Get Squad
+     */
+    async getPeers(groupId: string): Promise<any[]> {
+        if (!this.isConfigured()) return [];
+        try {
+            const timeWindow = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+
+            const response = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/study_peers?group_id=eq.${groupId}&last_ping=gt.${timeWindow}&select=*`, {
+                headers: this.getHeaders()
+            });
+
+            if (!response.ok) return [];
+            return await response.json();
+        } catch (e) {
+            return [];
+        }
+    },
+
+    /**
+     * QUESTION ARCHIVE: Archive a question
+     */
+    async archiveQuestion(token: string, question: {
+        question_text: string,
+        options: string[],
+        correct_index: number,
+        explanation: string,
+        subject: string,
+        topic: string,
+        difficulty: string,
+        tags: string[]
+    }): Promise<boolean> {
+        if (!this.isConfigured()) return false;
+        try {
+            const profile = await this.getProfile(token);
+            if (!profile) return false;
+
+            const response = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/questions`, {
+                method: 'POST',
+                headers: this.getHeaders(token),
+                body: JSON.stringify({
+                    ...question,
+                    author_id: profile.id
+                })
+            });
+            return response.ok;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    /**
+     * QUESTION ARCHIVE: Get questions with optional filters
+     */
+    async getQuestions(filters: {
+        subject?: string,
+        topic?: string,
+        difficulty?: string,
+        tags?: string[]
+    } = {}): Promise<any[]> {
+        if (!this.isConfigured()) return [];
+        try {
+            let query = `${SUPABASE_URL}/rest/v1/questions?select=*`;
+            if (filters.subject) query += `&subject=eq.${filters.subject}`;
+            if (filters.topic) query += `&topic=eq.${filters.topic}`;
+            if (filters.difficulty) query += `&difficulty=eq.${filters.difficulty}`;
+            if (filters.tags && filters.tags.length > 0) {
+                const tagString = filters.tags.map(t => `"${t}"`).join(',');
+                query += `&tags=cs.{${tagString}}`;
+            }
+
+            const response = await fetchWithTimeout(query, {
+                headers: this.getHeaders()
+            });
+
+            if (!response.ok) return [];
+            return await response.json();
+        } catch (e) {
+            return [];
+        }
+    },
+
+    // =====================================================================
+    // ENHANCED QUESTION DATABASE METHODS
+    // =====================================================================
+
+    /**
+     * Get questions with full relational data (chapters, papers, tags)
+     */
+    async getQuestionsEnhanced(filters: {
+        subject?: string,
+        difficulty?: string,
+        year?: number,
+        exam_name?: string,
+        chapter_id?: string,
+        search_text?: string,
+        limit?: number,
+        offset?: number
+    } = {}): Promise<any[]> {
+        if (!this.isConfigured()) return [];
+        try {
+            // Use the database function for complex queries
+            const response = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/rpc/get_questions_with_relations`, {
+                method: 'POST',
+                headers: this.getHeaders(),
+                body: JSON.stringify({
+                    p_subject: filters.subject || null,
+                    p_difficulty: filters.difficulty || null,
+                    p_year: filters.year || null,
+                    p_exam_name: filters.exam_name || null,
+                    p_chapter_id: filters.chapter_id || null,
+                    p_limit: filters.limit || 50,
+                    p_offset: filters.offset || 0
+                })
+            });
+
+            if (!response.ok) return [];
+            return await response.json();
+        } catch (e) {
+            console.error('Error fetching enhanced questions:', e);
+            return [];
+        }
+    },
+
+    /**
+     * Get all exam papers
+     */
+    async getExamPapers(filters?: { year?: number, exam_name?: string }): Promise<any[]> {
+        if (!this.isConfigured()) return [];
+        try {
+            let query = `${SUPABASE_URL}/rest/v1/exam_papers?select=*&order=year.desc,exam_name`;
+            if (filters?.year) query += `&year=eq.${filters.year}`;
+            if (filters?.exam_name) query += `&exam_name=eq.${filters.exam_name}`;
+
+            const response = await fetchWithTimeout(query, {
+                headers: this.getHeaders()
+            });
+
+            if (!response.ok) return [];
+            return await response.json();
+        } catch (e) {
+            return [];
+        }
+    },
+
+    /**
+     * Get chapters by subject (with hierarchy)
+     */
+    async getChaptersBySubject(subject: string): Promise<any[]> {
+        if (!this.isConfigured()) return [];
+        try {
+            const response = await fetchWithTimeout(
+                `${SUPABASE_URL}/rest/v1/chapters?subject=eq.${subject}&order=order_index`,
+                { headers: this.getHeaders() }
+            );
+
+            if (!response.ok) return [];
+            return await response.json();
+        } catch (e) {
+            return [];
+        }
+    },
+
+    /**
+     * Get all tags
+     */
+    async getTags(category?: string): Promise<any[]> {
+        if (!this.isConfigured()) return [];
+        try {
+            let query = `${SUPABASE_URL}/rest/v1/question_tags_master?select=*`;
+            if (category) query += `&category=eq.${category}`;
+
+            const response = await fetchWithTimeout(query, {
+                headers: this.getHeaders()
+            });
+
+            if (!response.ok) return [];
+            return await response.json();
+        } catch (e) {
+            return [];
+        }
+    },
+
+    /**
+     * Archive question with relationships (enhanced method)
+     */
+    async archiveQuestionEnhanced(
+        token: string,
+        question: {
+            question_text: string,
+            options: string[],
+            correct_index: number,
+            explanation: string,
+            subject: string,
+            topic: string,
+            difficulty: string,
+            nested_tags?: Record<string, string>,
+            question_image_url?: string,
+            option_image_urls?: string[]
+        },
+        chapterIds: string[] = [],
+        paperIds: string[] = [],
+        tagIds: string[] = []
+    ): Promise<{ success: boolean, questionId?: string, error?: string }> {
+        if (!this.isConfigured()) return { success: false, error: 'Not configured' };
+
+        try {
+            const profile = await this.getProfile(token);
+            if (!profile) return { success: false, error: 'Not authenticated' };
+
+            // 1. Create question
+            const questionResponse = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/questions`, {
+                method: 'POST',
+                headers: {
+                    ...this.getHeaders(token),
+                    'Prefer': 'return=representation'
+                },
+                body: JSON.stringify({
+                    ...question,
+                    author_id: profile.id
+                })
+            });
+
+            if (!questionResponse.ok) {
+                return { success: false, error: 'Failed to create question' };
+            }
+
+            const [createdQuestion] = await questionResponse.json();
+            const questionId = createdQuestion.id;
+
+            // 2. Link to chapters
+            if (chapterIds.length > 0) {
+                const chapterLinks = chapterIds.map((chapterId, index) => ({
+                    question_id: questionId,
+                    chapter_id: chapterId,
+                    is_primary: index === 0
+                }));
+
+                await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/question_chapters`, {
+                    method: 'POST',
+                    headers: this.getHeaders(token),
+                    body: JSON.stringify(chapterLinks)
+                });
+            }
+
+            // 3. Link to papers
+            if (paperIds.length > 0) {
+                const paperLinks = paperIds.map((paperId, index) => ({
+                    question_id: questionId,
+                    paper_id: paperId,
+                    question_number: index + 1,
+                    marks: 4
+                }));
+
+                await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/question_papers`, {
+                    method: 'POST',
+                    headers: this.getHeaders(token),
+                    body: JSON.stringify(paperLinks)
+                });
+            }
+
+            // 4. Link to tags
+            if (tagIds.length > 0) {
+                const tagLinks = tagIds.map(tagId => ({
+                    question_id: questionId,
+                    tag_id: tagId
+                }));
+
+                await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/question_tags`, {
+                    method: 'POST',
+                    headers: this.getHeaders(token),
+                    body: JSON.stringify(tagLinks)
+                });
+            }
+
+            return { success: true, questionId };
+
+        } catch (e: any) {
+            return { success: false, error: e.message };
+        }
+    },
+
+    /**
+     * Get question statistics
+     */
+    async getQuestionStats(): Promise<any> {
+        if (!this.isConfigured()) return null;
+        try {
+            const [bySubject, byYear, byChapter] = await Promise.all([
+                fetchWithTimeout(`${SUPABASE_URL}/rest/v1/question_stats_by_subject`, {
+                    headers: this.getHeaders()
+                }),
+                fetchWithTimeout(`${SUPABASE_URL}/rest/v1/question_stats_by_year`, {
+                    headers: this.getHeaders()
+                }),
+                fetchWithTimeout(`${SUPABASE_URL}/rest/v1/question_stats_by_chapter`, {
+                    headers: this.getHeaders()
+                })
+            ]);
+
+            return {
+                by_subject: bySubject.ok ? await bySubject.json() : [],
+                by_year: byYear.ok ? await byYear.json() : [],
+                by_chapter: byChapter.ok ? await byChapter.json() : []
+            };
+        } catch (e) {
+            return null;
+        }
+    }
 };

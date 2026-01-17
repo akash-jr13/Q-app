@@ -1,167 +1,217 @@
-
 import React, { useState, useEffect } from 'react';
-import { HomeDashboard } from './components/HomeDashboard';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { DigitalCockpit } from './components/DigitalCockpit';
 import { AuthInterface } from './components/AuthInterface';
-import { Workspace } from './components/Workspace';
 import { TakerInterface } from './components/taker/TakerInterface';
-import { HistoryInterface } from './components/HistoryInterface';
-import { TestSeriesInterface } from './components/TestSeriesInterface';
-import { ProgressInterface } from './components/ProgressInterface';
-import { TestAnalysis } from './components/taker/TestAnalysis';
+
+import { LecturesInterface } from './components/LecturesInterface';
+import { PracticeInterface } from './components/PracticeInterface';
+import { AnalysisInterface } from './components/AnalysisInterface';
+import { PeerInterface } from './components/PeerInterface';
+import { ToolsInterface } from './components/ToolsInterface';
+import { Workspace } from './components/Workspace';
 import { Sidebar } from './components/Sidebar';
-import { NeuralAuditInterface } from './components/NeuralAuditInterface';
-import { CanvasInterface } from './components/CanvasInterface';
+import { QuestionArchiveInterface } from './components/QuestionArchiveInterface';
+import { AdminGuard } from './components/AdminGuard';
+import { SettingsInterface } from './components/SettingsInterface';
+import { SubscriptionInterface } from './components/SubscriptionInterface';
 import { CloudService, UserProfile } from './utils/cloud';
-import { AppMode, WorkspaceState } from './types';
+import { AppMode } from './types';
+import { ThemeProvider } from './components/ThemeContext';
+import { AdminInterface } from './components/admin/AdminInterface';
 
 const App: React.FC = () => {
-  const [mode, setMode] = useState<AppMode>('home');
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
-  const [activeWorkspace] = useState<WorkspaceState | null>(null);
   const [preloadedPackage, setPreloadedPackage] = useState<{ name: string, data: string } | null>(null);
-  const [analysisData, setAnalysisData] = useState<any>(null);
 
-  // Sub-modes for nested navigation
-  const [practiceSubMode, setPracticeSubMode] = useState<'list' | 'taker'>('list');
-  const [analysisSubMode, setAnalysisSubMode] = useState<'dashboard' | 'history' | 'report' | 'neural'>('dashboard');
+  // Taker and Analysis sub-modes are better handled with sub-routes or query params, 
+  // but for now keeping state for simplicity if they are not full pages.
+  // Actually, let's make them full pages or conditional renders within the route.
+  const [practiceMode, setPracticeMode] = useState<'list' | 'taker'>('list');
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Auto-Auth Restore
   useEffect(() => {
+    // If we already have a profile (e.g. Guest Mode), don't force re-auth check
+    if (userProfile) return;
+
     const initAuth = async () => {
       const token = localStorage.getItem('supabase_token');
       if (token) {
         try {
           const profile = await CloudService.getProfile(token);
-          if (profile) setUserProfile(profile);
+          if (profile) {
+            setUserProfile(profile);
+            if (location.pathname === '/auth') {
+              navigate('/');
+            }
+          } else {
+            navigate('/auth');
+          }
         } catch (e) {
           localStorage.removeItem('supabase_token');
+          navigate('/auth');
+        }
+      } else {
+        if (location.pathname !== '/auth' && location.pathname !== '/admin' && location.pathname !== '/archive') {
+          navigate('/auth');
         }
       }
       setIsAuthLoading(false);
     };
     initAuth();
-  }, []);
+  }, [navigate, location.pathname, userProfile]);
 
   const handleStartTest = (name: string, data: string) => {
     setPreloadedPackage({ name, data });
-    setPracticeSubMode('taker');
-    setMode('practice');
-  };
-
-  // Content rendering switch
-  const renderMainContent = () => {
-    switch (mode) {
-      case 'home':
-        return <HomeDashboard onResume={() => setMode('practice')} />;
-      case 'study':
-        return <Workspace state={activeWorkspace || { id: 'default', name: 'JEE Prep', lastModified: new Date().toISOString(), elements: [] }} onExit={() => setMode('home')} />;
-      case 'practice':
-        if (practiceSubMode === 'taker') {
-          return <TakerInterface onExit={() => setPracticeSubMode('list')} initialPackage={preloadedPackage} />;
-        }
-        return <TestSeriesInterface onExit={() => setMode('home')} onStartTest={handleStartTest} />;
-      case 'analysis':
-        if (analysisSubMode === 'report') {
-          return <TestAnalysis
-            testName={analysisData?.testName || "No Analysis"}
-            questions={analysisData?.questions || []}
-            answers={analysisData?.answers || {}}
-            questionTimes={analysisData?.questionTimes || {}}
-            onExit={() => setAnalysisSubMode('dashboard')}
-          />;
-        }
-        if (analysisSubMode === 'history') {
-          return <HistoryInterface onExit={() => setAnalysisSubMode('dashboard')} onAnalyze={(data) => { setAnalysisData(data); setAnalysisSubMode('report'); }} />;
-        }
-        if (analysisSubMode === 'neural') {
-          return <NeuralAuditInterface onExit={() => setAnalysisSubMode('dashboard')} />;
-        }
-        return (
-          <div className="p-1 w-full h-full overflow-hidden flex flex-col">
-            <div className="p-12 pb-6 border-b border-white/5 flex justify-between items-center">
-              <h2 className="text-2xl font-medium tracking-tight">Performance Intelligence</h2>
-              <div className="flex gap-2">
-                <button onClick={() => setAnalysisSubMode('history')} className="px-4 py-2 bg-[#1e1e1e] rounded-lg text-sm text-[#9aa0a6] hover:text-[#e8eaed] transition-colors">History</button>
-                <button onClick={() => setAnalysisSubMode('neural')} className="px-4 py-2 bg-[#1e1e1e] rounded-lg text-sm text-[#9aa0a6] hover:text-[#e8eaed] transition-colors">Audit</button>
-              </div>
-            </div>
-            <div className="flex-1 overflow-y-auto">
-              <ProgressInterface onExit={() => setMode('home')} onAudit={() => setAnalysisSubMode('neural')} />
-            </div>
-          </div>
-        );
-      case 'tools':
-        return <div className="h-screen w-full relative bg-[#000000]">
-          <CanvasInterface onExit={() => setMode('home')} />
-        </div>;
-      case 'auth':
-        return <AuthInterface onAuthSuccess={(p) => { setUserProfile(p); setMode('home'); }} onExit={() => setMode('home')} />;
-      case 'settings':
-        return (
-          <main className="flex-1 overflow-y-auto p-12 flex flex-col items-center">
-            <div className="w-full max-w-4xl bg-zinc-900 border border-zinc-800 rounded-3xl p-8 space-y-6">
-              <h2 className="text-2xl font-bold uppercase tracking-widest font-mono">Profile Settings</h2>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-zinc-950 rounded-xl border border-zinc-800">
-                  <span className="text-zinc-500 uppercase text-xs font-bold">Email</span>
-                  <span className="font-mono">{userProfile?.email}</span>
-                </div>
-                <div className="flex justify-between items-center p-4 bg-zinc-950 rounded-xl border border-zinc-800">
-                  <span className="text-zinc-500 uppercase text-xs font-bold">Full Name</span>
-                  <span>{userProfile?.fullName}</span>
-                </div>
-                <div className="flex justify-between items-center p-4 bg-zinc-950 rounded-xl border border-zinc-800">
-                  <span className="text-zinc-500 uppercase text-xs font-bold">Target Exam</span>
-                  <span className="text-emerald-500 font-bold">{userProfile?.targetExam}</span>
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  localStorage.removeItem('supabase_token');
-                  setUserProfile(null);
-                  setMode('auth');
-                }}
-                className="w-full py-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-2xl font-bold uppercase tracking-widest text-xs transition-all"
-              >
-                Sign Out / Terminate Session
-              </button>
-            </div>
-          </main>
-        );
-      default:
-        // Default to dashboard or error state
-        return null;
-    }
+    setPracticeMode('taker');
+    // In a real router app, maybe navigate to /practice/taker or something
+    // For now we can keep PracticeInterface managing this internally or use conditional
   };
 
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen bg-[#000000] flex items-center justify-center">
-        <div className="w-12 h-12 border-2 border-white/10 border-t-white rounded-full animate-spin" />
+      <div className="min-h-screen bg-theme-primary flex items-center justify-center transition-colors">
+        <div className="w-12 h-12 border-2 border-theme-primary border-t-emerald-500 rounded-full animate-spin" />
       </div>
     );
   }
 
-  return (
-    <div className="flex min-h-screen bg-[#000000] text-[#e8eaed] font-sans selection:bg-[#3c4043] selection:text-white overflow-hidden">
-      {/* Sidebar - Conditional */}
-      {!['auth', 'taker', 'study'].includes(mode) && (
-        <Sidebar
-          activeMode={mode}
-          setMode={setMode}
-          userProfile={userProfile}
-          onLogout={() => {
-            localStorage.removeItem('supabase_token');
-            setUserProfile(null);
-            setMode('auth');
-          }}
-        />
-      )}
+  // Wrapper for routes that need Sidebar
+  const Layout = ({ children }: { children: React.ReactNode }) => (
+    <div className="flex min-h-screen bg-theme-primary text-theme-primary font-sans selection:bg-zinc-200 dark:selection:bg-[#3c4043] overflow-hidden relative transition-colors">
+      <Sidebar
+        activeMode={location.pathname === '/' ? 'home' : location.pathname.slice(1) as AppMode}
+        setMode={(mode) => navigate(mode === 'home' ? '/' : `/${mode}`)}
+        userProfile={userProfile}
+        onLogout={() => {
+          localStorage.removeItem('supabase_token');
+          setUserProfile(null);
+          navigate('/auth');
+        }}
+      />
+      <main className="flex-1 relative overflow-y-auto overflow-x-hidden h-screen bg-theme-primary transition-colors">
+        {children}
+      </main>
+    </div>
+  );
 
-      {/* Main Content Area */}
+  return (
+    <ThemeProvider>
+      <Routes>
+        <Route path="/auth" element={
+          <AuthInterface
+            onAuthSuccess={(p) => { setUserProfile(p); navigate('/'); }}
+            onExit={() => {
+              setUserProfile({
+                id: 'guest',
+                email: 'guest@understood.app',
+                fullName: 'Guest Agent',
+                targetExam: 'Preview Mode',
+                joinedAt: new Date().toISOString()
+              });
+              navigate('/');
+            }}
+          />
+        } />
+
+        <Route path="/" element={<Layout><DigitalCockpit onResume={() => navigate('/lectures')} /></Layout>} />
+        <Route path="/subscription" element={<SubscriptionInterface userProfile={userProfile} onExit={() => navigate('/')} />} />
+
+        <Route path="/lectures" element={<Layout><LecturesInterface /></Layout>} />
+
+        <Route path="/practice" element={
+          <Layout>
+            {practiceMode === 'taker' ? (
+              <TakerInterface
+                onExit={() => setPracticeMode('list')}
+                initialPackage={preloadedPackage}
+              />
+            ) : (
+              <PracticeInterface
+                onExit={() => navigate('/')}
+                onStartTest={handleStartTest}
+              />
+            )}
+          </Layout>
+        } />
+
+        <Route path="/analysis" element={<Layout><AnalysisInterface /></Layout>} />
+        <Route path="/peer" element={<Layout><PeerInterface /></Layout>} />
+        <Route path="/tools" element={<Layout><ToolsInterface /></Layout>} />
+
+        <Route path="/admin" element={
+          <AdminGuard onExit={() => navigate('/')}>
+            <AdminInterface />
+          </AdminGuard>
+        } />
+
+        <Route path="/workflow" element={
+          <WorkflowWrapper
+            navigate={navigate}
+            userProfile={userProfile}
+            onLogout={() => {
+              localStorage.removeItem('supabase_token');
+              setUserProfile(null);
+              navigate('/auth');
+            }}
+          />
+        } />
+
+        <Route path="/archive" element={
+          <Layout>
+            <AdminGuard onExit={() => navigate('/')}>
+              <QuestionArchiveInterface />
+            </AdminGuard>
+          </Layout>
+        } />
+
+        <Route path="/settings" element={
+          <Layout>
+            <SettingsInterface userProfile={userProfile} setUserProfile={setUserProfile} />
+          </Layout>
+        } />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </ThemeProvider>
+  );
+};
+
+// Helper to handle workflow hook state in a route
+const WorkflowWrapper = ({ navigate, userProfile, onLogout }: { navigate: any, userProfile: UserProfile | null, onLogout: () => void }) => {
+  const [savedWorkflow, setSavedWorkflow] = useState<any>(() => {
+    const saved = localStorage.getItem('jee_workflow_state');
+    return saved ? JSON.parse(saved) : {
+      id: 'prep-1',
+      name: 'JEE PREP WORKFLOW',
+      lastModified: new Date().toISOString(),
+      elements: []
+    };
+  });
+
+  const handleSaveWorkflow = (newState: any) => {
+    setSavedWorkflow(newState);
+    localStorage.setItem('jee_workflow_state', JSON.stringify(newState));
+  };
+
+  return (
+    <div className="flex min-h-screen bg-[#000000] text-[#e8eaed] font-sans selection:bg-[#3c4043] selection:text-white overflow-hidden relative">
+      <Sidebar
+        activeMode="workflow"
+        setMode={(mode) => navigate(mode === 'home' ? '/' : `/${mode}`)}
+        userProfile={userProfile}
+        onLogout={onLogout}
+      />
       <main className="flex-1 relative overflow-y-auto overflow-x-hidden h-screen bg-[#000000]">
-        {renderMainContent()}
+        <Workspace
+          state={savedWorkflow}
+          onSave={handleSaveWorkflow}
+          onExit={() => navigate('/')}
+        />
       </main>
     </div>
   );

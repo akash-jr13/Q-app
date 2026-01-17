@@ -80,6 +80,17 @@ npm install
 npm run dev
 ```
 
+**"File ... npm.ps1 cannot be loaded" on Windows?**
+This is a PowerShell permission issue. Run this command in your terminal to fix it for the current session:
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+npm run dev
+```
+OR use the direct node command:
+```bash
+node node_modules/vite/bin/vite.js
+```
+
 **Missing API key error?**
 - Check `.env.local` exists in project root
 - Verify `GEMINI_API_KEY` is set
