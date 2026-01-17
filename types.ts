@@ -1,20 +1,14 @@
 
 import React from 'react';
 
-export type AppMode = 
-  | 'dashboard' 
-  | 'workspace' 
-  | 'settings' 
-  | 'auth' 
-  | 'taker' 
-  | 'history' 
-  | 'progress' 
-  | 'test-series' 
-  | 'analysis' 
-  | 'mapper' 
-  | 'series-manager' 
-  | 'admin-dashboard' 
-  | 'neural-audit';
+export type AppMode =
+  | 'home'
+  | 'study'
+  | 'practice'
+  | 'analysis'
+  | 'tools'
+  | 'settings'
+  | 'auth';
 
 export interface WorkspaceState {
   id: string;

@@ -12,9 +12,10 @@ export const AuthInterface: React.FC<AuthInterfaceProps> = ({ onAuthSuccess, onE
     const [mode, setMode] = useState<'login' | 'signup'>('login');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const [isConfigOk, setIsConfigOk] = useState(true);
     const [showDebug, setShowDebug] = useState(false);
-    
+
     // Form States
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -27,7 +28,7 @@ export const AuthInterface: React.FC<AuthInterfaceProps> = ({ onAuthSuccess, onE
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!isConfigOk) {
             setError("Cloud configuration not detected.");
             return;
@@ -35,22 +36,23 @@ export const AuthInterface: React.FC<AuthInterfaceProps> = ({ onAuthSuccess, onE
 
         setIsLoading(true);
         setError("");
+        setSuccess("");
 
         try {
             if (mode === 'signup') {
                 const res = await CloudService.signUp(email, password, fullName, targetExam);
                 if (res.error) throw new Error(res.error);
-                
+
                 // Switch to login mode on successful signup
                 setMode('login');
-                setError("Registration successful. Access verified.");
+                setSuccess("Registration successful. Access verified.");
             } else {
                 const res = await CloudService.login(email, password);
                 if (res.error) throw new Error(res.error);
-                
+
                 // Store session
                 localStorage.setItem('supabase_token', res.session.access_token);
-                
+
                 // Fetch full profile
                 const profile = await CloudService.getProfile(res.session.access_token);
                 if (profile) {
@@ -74,12 +76,12 @@ export const AuthInterface: React.FC<AuthInterfaceProps> = ({ onAuthSuccess, onE
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-zinc-800/10 rounded-full blur-[120px] pointer-events-none" />
 
             {onExit && (
-                <button 
-                  onClick={onExit}
-                  className="fixed top-8 left-8 flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900/50 hover:bg-zinc-900 text-zinc-500 hover:text-zinc-200 border border-zinc-800 transition-all text-xs font-bold uppercase tracking-widest z-20"
+                <button
+                    onClick={onExit}
+                    className="fixed top-8 left-8 flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900/50 hover:bg-zinc-900 text-zinc-500 hover:text-zinc-200 border border-zinc-800 transition-all text-xs font-bold uppercase tracking-widest z-20"
                 >
-                  <ArrowLeft size={16} />
-                  Return to Landing
+                    <ArrowLeft size={16} />
+                    Return to Landing
                 </button>
             )}
 
@@ -95,7 +97,7 @@ export const AuthInterface: React.FC<AuthInterfaceProps> = ({ onAuthSuccess, onE
                         Identity Gate
                     </h1>
                     <p className="text-zinc-500 text-xs font-mono uppercase tracking-widest leading-relaxed">
-                        Secure authorization for centralized<br/>performance intelligence
+                        Secure authorization for centralized<br />performance intelligence
                     </p>
                 </div>
 
@@ -110,14 +112,14 @@ export const AuthInterface: React.FC<AuthInterfaceProps> = ({ onAuthSuccess, onE
                                 </p>
                             </div>
                         </div>
-                        <button 
+                        <button
                             onClick={() => setShowDebug(!showDebug)}
                             className="w-full py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-[9px] font-bold uppercase tracking-widest hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2"
                         >
                             <Terminal size={12} />
                             {showDebug ? "Hide Diagnostics" : "Run Troubleshooter"}
                         </button>
-                        
+
                         {showDebug && (
                             <div className="p-3 bg-black rounded-lg border border-zinc-800 font-mono text-[9px] space-y-2 overflow-x-auto">
                                 <div className="flex justify-between">
@@ -140,7 +142,7 @@ export const AuthInterface: React.FC<AuthInterfaceProps> = ({ onAuthSuccess, onE
                             <div className="space-y-4 animate-in slide-in-from-left-2 duration-300">
                                 <div className="relative group">
                                     <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-zinc-300 transition-colors" />
-                                    <input 
+                                    <input
                                         required
                                         type="text"
                                         placeholder="Full Name"
@@ -151,7 +153,7 @@ export const AuthInterface: React.FC<AuthInterfaceProps> = ({ onAuthSuccess, onE
                                 </div>
                                 <div className="relative group">
                                     <Target size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-zinc-300 transition-colors" />
-                                    <input 
+                                    <input
                                         required
                                         type="text"
                                         placeholder="Objective (e.g. JEE 2026)"
@@ -165,7 +167,7 @@ export const AuthInterface: React.FC<AuthInterfaceProps> = ({ onAuthSuccess, onE
 
                         <div className="relative group">
                             <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-zinc-300 transition-colors" />
-                            <input 
+                            <input
                                 required
                                 type="email"
                                 placeholder="Email Address"
@@ -177,7 +179,7 @@ export const AuthInterface: React.FC<AuthInterfaceProps> = ({ onAuthSuccess, onE
 
                         <div className="relative group">
                             <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-zinc-300 transition-colors" />
-                            <input 
+                            <input
                                 required
                                 type="password"
                                 placeholder="Access Password"
@@ -194,7 +196,14 @@ export const AuthInterface: React.FC<AuthInterfaceProps> = ({ onAuthSuccess, onE
                             </div>
                         )}
 
-                        <button 
+                        {success && (
+                            <div className="flex items-start gap-3 p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl animate-in slide-in-from-top-1">
+                                <ShieldCheck size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+                                <p className="text-[10px] text-emerald-400 font-bold uppercase leading-tight">{success}</p>
+                            </div>
+                        )}
+
+                        <button
                             type="submit"
                             disabled={isLoading}
                             className="w-full py-4 bg-zinc-100 hover:bg-white text-black font-bold rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-30 shadow-xl shadow-white/5 uppercase tracking-widest text-xs"
@@ -214,11 +223,12 @@ export const AuthInterface: React.FC<AuthInterfaceProps> = ({ onAuthSuccess, onE
                     </form>
 
                     <div className="mt-8 pt-8 border-t border-zinc-800 flex flex-col gap-4">
-                        <button 
+                        <button
                             disabled={isLoading}
                             onClick={() => {
                                 setMode(mode === 'login' ? 'signup' : 'login');
                                 setError("");
+                                setSuccess("");
                             }}
                             className="text-zinc-500 hover:text-zinc-300 text-[10px] font-bold uppercase tracking-widest transition-colors text-center disabled:opacity-50"
                         >
@@ -228,8 +238,8 @@ export const AuthInterface: React.FC<AuthInterfaceProps> = ({ onAuthSuccess, onE
                 </div>
 
                 <div className="flex items-center justify-center gap-3 text-[10px] font-mono text-zinc-800 uppercase tracking-widest">
-                   <Lock size={12} className="opacity-50" />
-                   E2E Encrypted Protocol
+                    <Lock size={12} className="opacity-50" />
+                    E2E Encrypted Protocol
                 </div>
             </div>
         </div>
